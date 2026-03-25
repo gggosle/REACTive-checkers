@@ -1,5 +1,5 @@
 import {GAME_CONFIG} from "../constants.js";
-import {PlayerTimes} from "./interfaces";
+import type {PlayerTimes} from "./interfaces";
 
 export class TimerModel {
     #playerTimes: PlayerTimes = { 1: GAME_CONFIG.DEFAULT_GAME_TIME, 2: GAME_CONFIG.DEFAULT_GAME_TIME };

@@ -2,8 +2,8 @@ import {Checker} from './Checker.js';
 import {Color} from './Color.js';
 import {GAME_CONFIG} from "../constants.js";
 import {GAME_RULES} from "../constants.js";
-import { Position } from './interfaces';
-import { CheckerData } from './interfaces';
+import type {Position} from './interfaces';
+import type {CheckerData} from './interfaces';
 
 export class Board {
     #board: (Checker | null)[][];

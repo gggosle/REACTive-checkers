@@ -1,5 +1,5 @@
 import {GAME_CONFIG} from "../constants.js";
-import { LiveState } from '../models/interfaces';
+import type {LiveState} from '../models/interfaces';
 
 export class Storage {
     constructor() {}

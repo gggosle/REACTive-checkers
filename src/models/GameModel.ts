@@ -4,7 +4,7 @@ import {GAME_CONFIG} from "../constants.js";
 import {PlayerGenerator} from "../services/PlayerGenerator.js";
 import {Player} from "./Player.js";
 import {HistoryModel} from "./HistoryModel.js";
-import { Move, Position, MoveEntry, ClonedState, LiveState } from './interfaces';
+import type {Move, Position, MoveEntry, ClonedState, LiveState} from './interfaces';
 import { Checker } from './Checker.js';
 
 export class GameModel {

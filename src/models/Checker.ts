@@ -1,18 +1,24 @@
-import {CheckerData} from "./interfaces/CheckerData.js";
+import type {CheckerData} from "./interfaces";
 
 export class Checker {
+    #id: string;
     #color: string;
     #row: number;
     #col: number;
     #direction: number;
     #isKing: boolean;
 
-    constructor(color: string, row: number, col: number, direction: number, isKing: boolean = false) {
+    constructor(color: string, row: number, col: number, direction: number, isKing: boolean = false, id?: string) {
+        this.#id = id || Math.random().toString(36).substring(2, 9);
         this.#color = color;
         this.#row = row;
         this.#col = col;
         this.#direction = direction;
         this.#isKing = isKing;
+    }
+
+    get id(): string {
+        return this.#id;
     }
 
     get color(): string {
@@ -45,7 +51,7 @@ export class Checker {
     }
 
     clone(): Checker {
-        return new Checker(this.#color, this.#row, this.#col, this.#direction, this.#isKing);
+        return new Checker(this.#color, this.#row, this.#col, this.#direction, this.#isKing, this.#id);
     }
 
     toJSON(): CheckerData {

@@ -1,6 +1,6 @@
 import {GAME_CONFIG} from "../constants.js";
 import {MoveType} from "./MoveType.js";
-import { Position, MoveEntry } from './interfaces';
+import type {Position, MoveEntry} from './interfaces';
 
 export class HistoryModel {
     #moveHistory: MoveEntry[];
