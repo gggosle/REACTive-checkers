@@ -8,6 +8,7 @@ export const useGame = () => {
     const [boardState, setBoardState] = useState(game.boardClone);
     const [currentPlayer, setCurrentPlayer] = useState(game.currentPlayer);
     const [selectedPiece, setSelectedPiece] = useState<SelectedChecker | null>(null);
+    const [capturedCount, setCapturedCount] = useState(game.capturedCount);
     const [validMoves, setValidMoves] = useState<Move[]>([]);
     const [history, setHistory] = useState(game.moveHistory);
 
@@ -38,6 +39,7 @@ export const useGame = () => {
 
         setBoardState(game.boardClone);
         setCurrentPlayer(game.currentPlayer);
+        setCapturedCount(game.capturedCount);
         setHistory(game.moveHistory);
 
         if (game.mustJumpPiece) {
@@ -52,6 +54,8 @@ export const useGame = () => {
     return {
         boardState,
         currentPlayer,
+        players: game.players,
+        capturedCount,
         selectedPiece,
         validMoves,
         history,

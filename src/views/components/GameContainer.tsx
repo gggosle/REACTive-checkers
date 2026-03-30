@@ -7,6 +7,8 @@ export const GameContainer: React.FC = () => {
     const {
         boardState,
         currentPlayer,
+        players,
+        capturedCount,
         selectedPiece,
         validMoves,
         history,
@@ -17,7 +19,9 @@ export const GameContainer: React.FC = () => {
     return (
         <div className="game-container">
             <GameInfo
-                currentPlayer = {currentPlayer}
+                currentPlayer={currentPlayer}
+                players={players}
+                capturedCount={capturedCount}
             />
 
             <div className="main-content">
