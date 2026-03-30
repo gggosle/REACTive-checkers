@@ -18,26 +18,9 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer, players, capt
                     <span id="turn-text">{currentPlayer.name}'s Turn</span>
                 </div>
             </div>
-            <div style={{
-                display: 'flex',
-                gap: '20px',
-                marginTop: '15px',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-            }}>
+            <div className="captured-pieces-container">
                 {players.map(player => (
-                    <div key={player.id} style={{
-                        padding: '8px 16px',
-                        background: 'var(--white)',
-                        borderRadius: 'var(--border-radius-xl)',
-                        boxShadow: '0 4px 10px var(--shadow-color)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        fontSize: '1.05rem',
-                        fontWeight: '600',
-                        color: 'var(--text-color)'
-                    }}>
+                    <div key={player.id} className="captured-pieces-cell">
                         <span className={`turn-dot ${player.color}`} style={{ width: '12px', height: '12px', animation: 'none' }}></span>
                         <span>{player.name}:</span>
                         <span style={{ color: 'var(--primary-color)', fontSize: '1.2rem' }}>
