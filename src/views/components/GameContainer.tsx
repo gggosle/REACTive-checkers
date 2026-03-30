@@ -3,6 +3,7 @@ import { useGame } from '../../hooks/useGame';
 import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
+import {History} from "./History.tsx";
 
 export const GameContainer: React.FC = () => {
     const {
@@ -43,18 +44,10 @@ export const GameContainer: React.FC = () => {
                     />
                 </main>
 
-                <aside className="history-panel">
-                    <h2 className="history-title">Move History</h2>
-                    <div className="history-list-container">
-                        <ul id="history-list">
-                            {history.map((move, i) => (
-                                <li key={i} className="history-item">
-                                    {move.notation}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </aside>
+                <History
+                    history = {history}
+                />
+
             </div>
         </div>
     );
