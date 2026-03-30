@@ -1,11 +1,14 @@
 import React from 'react';
 import { useGame } from '../../hooks/useGame';
 import { Board } from './Board';
+import {GameInfo} from "./GameInfo.tsx";
 
 export const GameContainer: React.FC = () => {
     const {
         boardState,
         currentPlayer,
+        players,
+        capturedCount,
         selectedPiece,
         validMoves,
         history,
@@ -15,15 +18,11 @@ export const GameContainer: React.FC = () => {
 
     return (
         <div className="game-container">
-            <header className="header">
-                <h1 className="title">CHECKERS</h1>
-                <div className="turn-indicator">
-                    <div className="timer-container">
-                        <span className={`turn-dot ${currentPlayer.color}`}></span>
-                        <span id="turn-text">{currentPlayer.name}'s Turn</span>
-                    </div>
-                </div>
-            </header>
+            <GameInfo
+                currentPlayer={currentPlayer}
+                players={players}
+                capturedCount={capturedCount}
+            />
 
             <div className="main-content">
                 <main>

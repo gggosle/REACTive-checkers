@@ -13,12 +13,17 @@ export class GameModel {
     #currentPlayer: Player;
     #mustJumpPiece: Position | null = null;
     #hasJumpsAvailable = false;
+    #capturedCount: Record<number, number>;
     #history: HistoryModel;
 
     constructor() {
         this.#board = new Board();
         this.#players = PlayerGenerator.generatePlayers();
         this.#currentPlayer = this.#decideFirstPlayer();
+        this.#capturedCount = {
+            [this.#players[0].id]: 0,
+            [this.#players[1].id]: 0
+        };
         this.#history = new HistoryModel();
     }
 
@@ -53,6 +58,10 @@ export class GameModel {
 
     get mustJumpPiece(): Position | null {
         return this.#mustJumpPiece;
+    }
+
+    get capturedCount(): Record<number, number> {
+        return { ...this.#capturedCount };
     }
 
     get moveHistory(): MoveEntry[] {
@@ -163,6 +172,7 @@ export class GameModel {
         this.#board.movePiece(piece, from, toMove);
         if (toMove.type === MoveType.JUMP && toMove.captured) {
             this.#board.removePiece(toMove.captured);
+            this.#capturedCount[this.#currentPlayer.id]++;
         }
 
         const promoted = this.#checkPromotion(piece, toMove.row);
@@ -244,6 +254,7 @@ export class GameModel {
         this.#currentPlayer = this.#decideFirstPlayer();
         this.#mustJumpPiece = null;
         this.#hasJumpsAvailable = false;
+        this.#capturedCount = { [this.#players[0].id]: 0, [this.#players[1].id]: 0 };
         this.#history.reset();
     }
 }
