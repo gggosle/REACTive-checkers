@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { GameModel } from '../models/GameModel';
 import type {Move, SelectedChecker} from '../models/interfaces';
+import type {Player} from "../models/Player.ts";
 
 export const useGame = () => {
     const [game] = useState(() => new GameModel());
@@ -11,8 +12,10 @@ export const useGame = () => {
     const [capturedCount, setCapturedCount] = useState(game.capturedCount);
     const [validMoves, setValidMoves] = useState<Move[]>([]);
     const [history, setHistory] = useState(game.moveHistory);
+    const [winner, setWinner] = useState<Player | null>(null);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
+        if (winner) return;
         const piece = game.getPiece(row, col);
         if (!piece || piece.direction !== game.currentTurnDir) return;
 
@@ -30,7 +33,7 @@ export const useGame = () => {
     }, [game, selectedPiece]);
 
     const handleCellClick = useCallback((row: number, col: number) => {
-        if (!selectedPiece) return;
+        if (!selectedPiece || winner) return;
 
         const move = validMoves.find(m => m.row === row && m.col === col);
         if (!move) return;
@@ -48,8 +51,24 @@ export const useGame = () => {
         } else {
             setSelectedPiece(null);
             setValidMoves([]);
+
+            if (!game.hasAnyValidMoves(game.currentTurnDir)) {
+                const winningPlayer = game.players.find(p => p.id !== game.currentPlayer.id) || null;
+                setWinner(winningPlayer);
+            }
         }
-    }, [game, selectedPiece, validMoves]);
+    }, [game, selectedPiece, validMoves, winner]);
+
+    const handleRestart = useCallback(() => {
+        game.reset();
+        setBoardState(game.boardClone);
+        setCurrentPlayer(game.currentPlayer);
+        setHistory(game.moveHistory);
+        setCapturedCount(game.capturedCount);
+        setWinner(null);
+        setSelectedPiece(null);
+        setValidMoves([]);
+    }, [game]);
 
     return {
         boardState,
@@ -59,7 +78,9 @@ export const useGame = () => {
         selectedPiece,
         validMoves,
         history,
+        winner,
         handlePieceClick,
-        handleCellClick
+        handleCellClick,
+        handleRestart,
     };
 };

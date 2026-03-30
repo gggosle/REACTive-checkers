@@ -2,6 +2,7 @@ import React from 'react';
 import { useGame } from '../../hooks/useGame';
 import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
+import {GameOverModal} from "./GameOverModal.tsx";
 
 export const GameContainer: React.FC = () => {
     const {
@@ -12,12 +13,19 @@ export const GameContainer: React.FC = () => {
         selectedPiece,
         validMoves,
         history,
+        winner,
         handlePieceClick,
-        handleCellClick
+        handleCellClick,
+        handleRestart
     } = useGame();
 
     return (
         <div className="game-container">
+            <GameOverModal
+                winner={winner}
+                onRestart={handleRestart}
+            />
+
             <GameInfo
                 currentPlayer={currentPlayer}
                 players={players}
