@@ -51,9 +51,7 @@ export interface PlayerTimes {
     [key: number]: number;
 }
 
-export interface HistoryState {
-    history: MoveEntry[];
-}
+export type HistoryState = MoveEntry[];
 
 export interface InfoState {
     currentPlayer: Player;
@@ -85,16 +83,3 @@ export interface ClonedState {
 export interface LiveState extends ClonedState {
     playerTimes?: PlayerTimes;
 }
-
-export type OnMoveExecutedCallback = (moves: MoveEntry[]) => void;
-export type OnTurnChangeCallback = (player: Player) => void;
-export type OnWinCallback = (winner: Player) => void;
-export type OnCursorActionCallback = () => void;
-export type OnTimeoutCallback = (playerNum: number) => void;
-export type OnTickCallback = (playerTimes: PlayerTimes) => void;
-export type OnPlayAgainCallback = () => void;
-export type IsBlackSquareCallback = (row: number, col: number) => boolean;
-export type OnCheckerClickCallback = (row: number, col: number) => void;
-export type OnCellClickCallback = (row: number, col: number) => void;
-export type OnCompleteCallback = () => void;
-export type GetSelectedCheckerInfoCallback = () => SelectedChecker | null;

@@ -12,6 +12,6 @@ export function createInitialGameState(): GameState {
         mustJumpPiece: null,
         hasJumpsAvailable: false,
         capturedCount: {1: 0, 2: 0},
-        history: {history: []}
+        history: [],
     }
 }

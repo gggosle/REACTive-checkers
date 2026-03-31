@@ -1,5 +1,6 @@
 import { GAME_CONFIG } from '../constants.js';
 import type { GameState, Move, Position, Checker, Board } from '../types/game';
+import {generateMoveEntry} from "./historyUtils.ts";
 
 export function isBlackSquare(row: number, col: number): boolean {
     return (row + col) % 2 === 1;
@@ -154,18 +155,14 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
     if (!piece) return state;
 
     const newBoard = state.board.map(row => [...row]);
-    const newHistory = [...state.history.history];
+    const newHistory = [...state.history];
     const newCapturedCount = { ...state.capturedCount };
 
     const movedPiece = { ...piece, row: toMove.row, col: toMove.col };
     newBoard[from.row][from.col] = null;
     newBoard[toMove.row][toMove.col] = movedPiece;
 
-    newHistory.push({
-        notation: '',
-        from: { row: from.row, col: from.col },
-        to: { row: toMove.row, col: toMove.col }
-    });
+    newHistory.push(generateMoveEntry(from, toMove, newHistory.length));
 
     if (toMove.type === 'jump' && toMove.captured) {
         newBoard[toMove.captured.row][toMove.captured.col] = null;
@@ -183,7 +180,7 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
             return {
                 ...state,
                 board: newBoard,
-                history: { ...state.history, history: newHistory },
+                history: newHistory,
                 capturedCount: newCapturedCount,
                 mustJumpPiece: { row: toMove.row, col: toMove.col },
                 hasJumpsAvailable: true
@@ -196,7 +193,7 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
     return {
         ...state,
         board: newBoard,
-        history: { ...state.history, history: newHistory },
+        history: newHistory,
         capturedCount: newCapturedCount,
         mustJumpPiece: null,
         currentPlayer: nextPlayer,
