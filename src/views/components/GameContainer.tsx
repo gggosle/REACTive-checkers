@@ -3,17 +3,17 @@ import { useCheckers } from '../../hooks/useCheckers.ts';
 import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
-import {History} from "./History.tsx";
+// import {History} from "./History.tsx";
 
 export const GameContainer: React.FC = () => {
     const {
-        boardState,
+        board,
         currentPlayer,
         players,
         capturedCount,
         selectedPiece,
         validMoves,
-        history,
+        // history,
         winner,
         handlePieceClick,
         handleCellClick,
@@ -36,7 +36,7 @@ export const GameContainer: React.FC = () => {
             <div className="main-content">
                 <main>
                     <Board
-                        boardState={boardState}
+                        boardState={board}
                         selectedPiece={selectedPiece}
                         validMoves={validMoves}
                         onPieceClick={handlePieceClick}
@@ -44,9 +44,9 @@ export const GameContainer: React.FC = () => {
                     />
                 </main>
 
-                <History
-                    history = {history}
-                />
+                {/*<History*/}
+                {/*    history = {history}*/}
+                {/*/>*/}
 
             </div>
         </div>
