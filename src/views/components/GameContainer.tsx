@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from '../../hooks/useGame';
+import { useCheckers } from '../../hooks/useCheckers.ts';
 import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
@@ -7,7 +7,7 @@ import {History} from "./History.tsx";
 
 export const GameContainer: React.FC = () => {
     const {
-        boardState,
+        board,
         currentPlayer,
         players,
         capturedCount,
@@ -18,7 +18,7 @@ export const GameContainer: React.FC = () => {
         handlePieceClick,
         handleCellClick,
         handleRestart
-    } = useGame();
+    } = useCheckers();
 
     return (
         <div className="game-container">
@@ -36,7 +36,7 @@ export const GameContainer: React.FC = () => {
             <div className="main-content">
                 <main>
                     <Board
-                        boardState={boardState}
+                        boardState={board}
                         selectedPiece={selectedPiece}
                         validMoves={validMoves}
                         onPieceClick={handlePieceClick}

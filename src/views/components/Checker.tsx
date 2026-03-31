@@ -1,10 +1,9 @@
 import React from 'react';
 import { CSS_BOARD } from '../../constants';
-import { Checker as CheckerModel } from '../../models/Checker';
-import { Color } from '../../models/Color';
+import {Color, type Checker as CheckerType} from "../../types/game.ts";
 
 interface CheckerProps {
-    piece: CheckerModel;
+    piece: CheckerType;
     isSelected: boolean;
     onClick: (row: number, col: number) => void;
 }

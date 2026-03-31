@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { GAME_CONFIG } from '../../constants';
-import { Checker as CheckerModel } from '../../models/Checker';
-import type {Move, SelectedChecker} from '../../models/interfaces';
+import type {Move, SelectedChecker, Checker as CheckerType} from "../../types/game.ts";
 import { Cell } from './Cell';
 import { Checker } from './Checker';
 
 interface BoardProps {
-    boardState: (CheckerModel | null)[][];
+    boardState: (CheckerType | null)[][];
     selectedPiece: SelectedChecker | null;
     validMoves: Move[];
     onPieceClick: (row: number, col: number) => void;
@@ -16,7 +15,7 @@ interface BoardProps {
 export const Board: React.FC<BoardProps> = ({ boardState, selectedPiece, validMoves, onPieceClick, onCellClick }) => {
 
     const activePieces = useMemo(() => {
-        const flatList: CheckerModel[] = [];
+        const flatList: CheckerType[] = [];
         boardState.forEach(row => row.forEach(piece => {
             if (piece) flatList.push(piece);
         }));

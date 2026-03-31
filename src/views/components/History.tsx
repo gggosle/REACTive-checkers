@@ -1,7 +1,8 @@
 import React from 'react';
+import type {HistoryState} from "../../types/game.ts";
 
 interface HistoryProps {
-    history: { notation: string }[];
+    history: HistoryState;
 }
 
 export const History: React.FC<HistoryProps> = ({ history }) => {

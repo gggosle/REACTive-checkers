@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Player } from "../../models/Player";
+import type { Player } from '../../types/game.ts'
 
 interface GameInfoProps {
     currentPlayer: Player;
