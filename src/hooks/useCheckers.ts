@@ -1,10 +1,8 @@
 import {useState, useCallback, useRef} from 'react';
-import { GameModel } from '../models/GameModel';
-import type {Move, SelectedChecker} from '../models/interfaces';
-import type {Player} from "../models/Player.ts";
+import type {GameState, Move, SelectedChecker, Player} from '../types/game.ts';
 
-export const useGame = () => {
-    const gameRef = useRef(new GameModel());
+export const useCheckers = () => {
+    const gameRef = useRef(new GameState());
     const game = gameRef.current;
 
     const [boardState, setBoardState] = useState(game.boardClone);
