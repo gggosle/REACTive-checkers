@@ -8,14 +8,8 @@ export const useCheckers = (game: CheckersState | undefined) => {
         if (game) {
             return game;
         }
-        const baseState = createInitialGameState();
 
-        return {
-            ...baseState,
-            selectedPiece: null,
-            validMoves: [],
-            winner: null,
-        };
+        return createFreshGame();
     };
 
     const createFreshGame = (): CheckersState => {
@@ -23,10 +17,12 @@ export const useCheckers = (game: CheckersState | undefined) => {
             ...createInitialGameState(),
             selectedPiece: null,
             validMoves: [],
+            previousState: null,
             winner: null,
             gameId: Date.now(),
         };
     };
+
 
     const [gameState, dispatchGame] = useReducer(useGameReducer, null, initGame);
     useEffect(() => {
@@ -43,6 +39,11 @@ export const useCheckers = (game: CheckersState | undefined) => {
         dispatchGame({ type: 'CLICK_CELL', payload: { row, col } });
     }, []);
 
+    const handleUndo = useCallback(() => {
+        dispatchGame({ type: 'UNDO' });
+    }, []);
+
+    const canUndo = gameState.previousState !== null && gameState.winner === null;
 
     const handleTimeout = useCallback(() => {
         dispatchGame({ type: 'TIMEOUT' });
@@ -52,10 +53,13 @@ export const useCheckers = (game: CheckersState | undefined) => {
         dispatchGame({ type: 'RESTART', payload: createFreshGame() });
     }, []);
 
+
     return {
         ...gameState,
         handlePieceClick,
         handleCellClick,
+        handleUndo,
+        canUndo,
         handleTimeout,
         handleRestart
     };
