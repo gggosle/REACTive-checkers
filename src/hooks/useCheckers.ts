@@ -3,18 +3,12 @@ import {type CheckersState, useGameReducer} from './reducers/gameReducer';
 import {createInitialGameState} from '../logic/gameInitState.ts';
 import {GAME_CONFIG} from "../constants.ts";
 
-export const useCheckers = () => {
-
+export const useCheckers = (game: CheckersState | undefined) => {
     const initGame = (): CheckersState => {
-        let baseState = createInitialGameState();
-        try {
-            const saved = localStorage.getItem(GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY);
-            if (saved) {
-                baseState = JSON.parse(saved);
-            }
-        } catch (e) {
-            console.error("Failed to parse save game", e);
+        if (game) {
+            return game;
         }
+        const baseState = createInitialGameState();
 
         return {
             ...baseState,
@@ -40,8 +34,8 @@ export const useCheckers = () => {
     }, []);
 
 
-    const handleTimeout = useCallback((loserId: number) => {
-        dispatchGame({ type: 'TIMEOUT', payload: { loserId } });
+    const handleTimeout = useCallback(() => {
+        dispatchGame({ type: 'TIMEOUT' });
     }, []);
 
     const handleRestart = useCallback(() => {

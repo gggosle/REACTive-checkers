@@ -1,19 +1,21 @@
 import React from 'react';
-import type { Player } from '../../types/game.ts';
+import type {Player, TimerState} from '../../types/game.ts';
 import { PlayerTimer } from './PlayerTimer';
 import { useGameClock } from '../../hooks/useGameClock';
 
 export interface TimerControllerProps {
     activePlayerId: number | undefined;
     players: Player[];
-    onTimeOut: (loserId: number) => void;
+    onTimeOut: () => void;
+    initTimer: TimerState | undefined;
 }
 
 export const TimerController: React.FC<TimerControllerProps> = ({activePlayerId,
                                                                     players,
-                                                                    onTimeOut
+                                                                    onTimeOut,
+                                                                    initTimer,
                                                                 }) => {
-    const { playerTimes } = useGameClock(activePlayerId, onTimeOut);
+    const { playerTimes } = useGameClock(activePlayerId, onTimeOut, initTimer);
 
     return (
         <div className="timer-container info-container">

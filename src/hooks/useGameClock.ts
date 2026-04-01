@@ -3,15 +3,12 @@ import {timerReducer} from "./reducers/timerReducer.ts";
 import {GAME_CONFIG} from "../constants";
 import type {TimerState} from "../types/game.ts";
 
+export const useGameClock = (activePlayerId: number | undefined, onTimeOut: () => void, timer: TimerState | undefined) => {
+    const initTimer = (): TimerState => {
+        if (timer) return timer;
+        return { playerTimes: { 1: GAME_CONFIG.DEFAULT_GAME_TIME, 2: GAME_CONFIG.DEFAULT_GAME_TIME } };
+    };
 
-const initTimer = (): TimerState => {
-    const saved = localStorage.getItem('timer_state');
-    if (saved) return JSON.parse(saved);
-
-    return { playerTimes: { 1: GAME_CONFIG.DEFAULT_GAME_TIME, 2: GAME_CONFIG.DEFAULT_GAME_TIME } };
-};
-
-export const useGameClock = (activePlayerId: number | undefined, onTimeOut: (id: number) => void) => {
     const [timerState, dispatch] = useReducer(timerReducer, initTimer());
 
     const latestTimerRef = useRef(timerState);
@@ -38,7 +35,7 @@ export const useGameClock = (activePlayerId: number | undefined, onTimeOut: (id:
         const interval = setInterval(() => {
             if (timerState.playerTimes[activePlayerId] == 0) {
                 clearInterval(interval);
-                onTimeOut(activePlayerId);
+                onTimeOut();
             } else {
                 dispatch({ type: 'TICK', payload: { activePlayerId } });
             }

@@ -10,7 +10,7 @@ export interface CheckersState extends GameState {
 export type CheckersAction =
     | { type: 'CLICK_PIECE'; payload: { row: number; col: number } }
     | { type: 'CLICK_CELL'; payload: { row: number; col: number } }
-    | { type: 'TIMEOUT'; payload: { loserId: number } }
+    | { type: 'TIMEOUT' }
     | { type: 'RESTART'; payload: CheckersState };
 
 export const useGameReducer = (state: CheckersState, action: CheckersAction): CheckersState => {
@@ -81,7 +81,7 @@ export const useGameReducer = (state: CheckersState, action: CheckersAction): Ch
         case 'TIMEOUT': {
             if (state.winner) return state;
 
-            const winner = state.players.find(p => p.id !== action.payload.loserId) || null;
+            const winner = state.players.find(p => p.id !== state.currentPlayer.id) || null;
 
             return {
                 ...state,

@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useCheckers } from '../../hooks/useCheckers.ts';
 import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
 import {History} from "./History.tsx";
+import {loadGameSession} from "../../logic/storageUtils.ts";
 
 export const GameContainer: React.FC = () => {
+    const [savedSession] = useState(() => loadGameSession());
+
     const {
         board,
         currentPlayer,
@@ -20,7 +23,7 @@ export const GameContainer: React.FC = () => {
         handleCellClick,
         handleTimeout,
         handleRestart,
-    } = useCheckers();
+    } = useCheckers(savedSession?.game);
 
     return (
         <div className="game-container">
@@ -36,6 +39,7 @@ export const GameContainer: React.FC = () => {
                 winner={winner}
                 gameId={gameId}
                 onTimeOut={handleTimeout}
+                initTimer={savedSession?.timer}
             />
 
             <div className="main-content">
