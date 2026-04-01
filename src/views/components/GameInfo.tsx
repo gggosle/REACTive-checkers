@@ -1,5 +1,6 @@
 import type {Player, TimerState} from '../../types/game.ts'
 import {TimerController} from "./TimerController.tsx";
+import React from "react";
 
 
 interface GameInfoProps {
@@ -31,6 +32,7 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                 key={gameId}
                 activePlayerId={winner ? undefined : currentPlayer.id}
                 players={players}
+                gameId={gameId}
                 onTimeOut={onTimeOut}
                 initTimer={initTimer}
             />

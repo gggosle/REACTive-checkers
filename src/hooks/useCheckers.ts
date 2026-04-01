@@ -18,6 +18,16 @@ export const useCheckers = (game: CheckersState | undefined) => {
         };
     };
 
+    const createFreshGame = (): CheckersState => {
+        return {
+            ...createInitialGameState(),
+            selectedPiece: null,
+            validMoves: [],
+            winner: null,
+            gameId: Date.now(),
+        };
+    };
+
     const [gameState, dispatchGame] = useReducer(useGameReducer, null, initGame);
     useEffect(() => {
         if (gameState) {
@@ -41,7 +51,7 @@ export const useCheckers = (game: CheckersState | undefined) => {
     const handleRestart = useCallback(() => {
         localStorage.removeItem(GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY);
         localStorage.removeItem(GAME_CONFIG.LOCAL_STORAGE_TIMER_STATE_KEY);
-        dispatchGame({ type: 'RESTART', payload: initGame() });
+        dispatchGame({ type: 'RESTART', payload: createFreshGame() });
     }, []);
 
     return {

@@ -1,15 +1,27 @@
-import {useEffect, useReducer, useRef} from "react";
-import {timerReducer} from "./reducers/timerReducer.ts";
-import {GAME_CONFIG} from "../constants";
-import type {TimerState} from "../types/game.ts";
+import { useEffect, useReducer, useRef } from "react";
+import { timerReducer } from "./reducers/timerReducer.ts";
+import { GAME_CONFIG } from "../constants";
+import type { TimerState } from "../types/game.ts";
 
-export const useGameClock = (activePlayerId: number | undefined, onTimeOut: () => void, timer: TimerState | undefined) => {
-    const initTimer = (): TimerState => {
-        if (timer) return timer;
-        return { playerTimes: { 1: GAME_CONFIG.DEFAULT_GAME_TIME, 2: GAME_CONFIG.DEFAULT_GAME_TIME } };
+export const useGameClock = (
+    activePlayerId: number | undefined,
+    gameId: number,
+    onTimeOut: () => void,
+    timer: TimerState | undefined
+) => {
+
+    const initTimer = (initialTimer: TimerState | undefined): TimerState => {
+        if (initialTimer && initialTimer.gameId === gameId) {
+            return initialTimer;
+        }
+
+        return {
+            playerTimes: { 1: GAME_CONFIG.DEFAULT_GAME_TIME, 2: GAME_CONFIG.DEFAULT_GAME_TIME },
+            gameId: gameId
+        };
     };
 
-    const [timerState, dispatch] = useReducer(timerReducer, initTimer());
+    const [timerState, dispatch] = useReducer(timerReducer, timer, initTimer);
 
     const latestTimerRef = useRef(timerState);
     useEffect(() => {
@@ -33,8 +45,11 @@ export const useGameClock = (activePlayerId: number | undefined, onTimeOut: () =
         if (!activePlayerId) return;
 
         const interval = setInterval(() => {
-            if (timerState.playerTimes[activePlayerId] == 0) {
+            const currentTime = latestTimerRef.current.playerTimes[activePlayerId];
+
+            if (currentTime <= 1) {
                 clearInterval(interval);
+                dispatch({ type: 'TICK', payload: { activePlayerId } });
                 onTimeOut();
             } else {
                 dispatch({ type: 'TICK', payload: { activePlayerId } });
@@ -42,7 +57,7 @@ export const useGameClock = (activePlayerId: number | undefined, onTimeOut: () =
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [activePlayerId, timerState.playerTimes, onTimeOut]);
+    }, [activePlayerId, onTimeOut]);
 
     return timerState;
 }

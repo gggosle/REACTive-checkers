@@ -1,6 +1,5 @@
-export interface TimerState {
-    playerTimes: Record<number, number>;
-}
+import type {TimerState} from "../../types/game.ts";
+
 
 export type TimerAction =
     | { type: 'TICK'; payload: { activePlayerId: number } }

@@ -6,16 +6,18 @@ import { useGameClock } from '../../hooks/useGameClock';
 export interface TimerControllerProps {
     activePlayerId: number | undefined;
     players: Player[];
+    gameId: number,
     onTimeOut: () => void;
     initTimer: TimerState | undefined;
 }
 
 export const TimerController: React.FC<TimerControllerProps> = ({activePlayerId,
                                                                     players,
+                                                                    gameId,
                                                                     onTimeOut,
                                                                     initTimer,
                                                                 }) => {
-    const { playerTimes } = useGameClock(activePlayerId, onTimeOut, initTimer);
+    const { playerTimes } = useGameClock(activePlayerId, gameId, onTimeOut, initTimer);
 
     return (
         <div className="timer-container info-container">
