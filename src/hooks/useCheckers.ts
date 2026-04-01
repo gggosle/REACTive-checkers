@@ -49,8 +49,6 @@ export const useCheckers = (game: CheckersState | undefined) => {
     }, []);
 
     const handleRestart = useCallback(() => {
-        localStorage.removeItem(GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY);
-        localStorage.removeItem(GAME_CONFIG.LOCAL_STORAGE_TIMER_STATE_KEY);
         dispatchGame({ type: 'RESTART', payload: createFreshGame() });
     }, []);
 
