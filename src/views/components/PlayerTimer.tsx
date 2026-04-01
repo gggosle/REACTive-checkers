@@ -18,7 +18,6 @@ export const PlayerTimer: React.FC<PlayerTimerProps> = React.memo(({
 
     return (
         <span
-            className="player-timer"
             style={{
                 fontFamily: 'monospace',
                 fontSize: '1.2rem',

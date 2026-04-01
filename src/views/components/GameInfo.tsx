@@ -24,10 +24,8 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
             <h1 className="title">CHECKERS</h1>
 
             <div className="turn-indicator">
-                <div className="timer-container">
                     <span className={`turn-dot ${currentPlayer.color}`}></span>
                     <span id="turn-text">{currentPlayer.name}'s Turn</span>
-                </div>
             </div>
             <TimerController
                 key={gameId}
@@ -35,9 +33,9 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                 players={players}
                 onTimeOut={onTimeOut}
             />
-            <div className="captured-pieces-container">
+            <div className="info-container">
                 {players.map(player => (
-                    <div key={player.id} className="captured-pieces-cell">
+                    <div key={player.id} className="info-cell">
                         <span className={`turn-dot ${player.color}`} style={{ width: '12px', height: '12px', animation: 'none' }}></span>
                         <span>{player.name}:</span>
                         <span style={{ color: 'var(--primary-color)', fontSize: '1.2rem' }}>

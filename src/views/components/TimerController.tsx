@@ -42,11 +42,11 @@ export const TimerController: React.FC<TimerControllerProps> = ({
     }, [activePlayerId, onTimeOut]);
 
     return (
-        <div className="timer-controller-wrapper" style={{ display: 'flex', gap: '20px' }}>
+        <div className="timer-container info-container" >
             {players.map(player => (
-                <div key={player.id} style={{ display: 'flex', alignItems: 'center' }}>
+                <div key={player.id} className={'info-cell'} style={{ display: 'flex', alignItems: 'center' }}>
                     <span className={`turn-dot ${player.color}`} style={{ width: '12px', height: '12px', animation: 'none', marginRight: '6px' }}></span>
-                    <span style={{ fontSize: '0.9rem', marginRight: '4px' }}>{player.name}:</span>
+                    <span>{player.name}:</span>
                     <PlayerTimer
                         seconds={playerTimes[player.id]}
                         isActive={activePlayerId === player.id}
