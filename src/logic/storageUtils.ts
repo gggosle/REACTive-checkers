@@ -10,8 +10,9 @@ export const loadGameSession = (): { game: CheckersState; timer: TimerState } | 
         if (savedGame && savedTimer) {
             const parsedGame = JSON.parse(savedGame);
             const parsedTimer = JSON.parse(savedTimer);
-
-            return { game: parsedGame, timer: parsedTimer };
+            if(parsedGame.gameId === parsedTimer.gameId) {
+                return { game: parsedGame, timer: parsedTimer };
+            }
         }
     } catch (e) {
         console.warn("Save data corrupted. Starting fresh.");
