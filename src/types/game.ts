@@ -70,6 +70,7 @@ export interface GameState {
     hasJumpsAvailable: boolean;
     capturedCount: Record<number, number>;
     history: HistoryState;
+    gameId: number;
 }
 
 export interface ClonedState {

@@ -7,6 +7,7 @@ interface GameInfoProps {
     players: Player[];
     capturedCount: Record<number, number>;
     winner: Player | null;
+    gameId: number;
     onTimeOut: (loserId: number) => void;
 }
 
@@ -14,6 +15,7 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                                                       players,
                                                       capturedCount,
                                                       winner,
+                                                      gameId,
                                                       onTimeOut }) => {
 
 
@@ -28,6 +30,7 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                 </div>
             </div>
             <TimerController
+                key={gameId}
                 activePlayerId={winner ? undefined : currentPlayer.id}
                 players={players}
                 onTimeOut={onTimeOut}

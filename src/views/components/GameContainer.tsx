@@ -15,10 +15,11 @@ export const GameContainer: React.FC = () => {
         validMoves,
         history,
         winner,
+        gameId,
         handlePieceClick,
         handleCellClick,
         handleTimeout,
-        handleRestart
+        handleRestart,
     } = useCheckers();
 
     return (
@@ -33,6 +34,7 @@ export const GameContainer: React.FC = () => {
                 players={players}
                 capturedCount={capturedCount}
                 winner={winner}
+                gameId={gameId}
                 onTimeOut={handleTimeout}
             />
 
