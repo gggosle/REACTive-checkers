@@ -59,7 +59,6 @@ export interface InfoState {
 
 export interface TimerState {
     playerTimes: PlayerTimes;
-    activePlayer: number;
 }
 
 export interface GameState {
