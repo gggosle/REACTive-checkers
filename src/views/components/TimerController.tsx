@@ -20,7 +20,7 @@ export const TimerController: React.FC<TimerControllerProps> = ({activePlayerId,
     const { playerTimes } = useGameClock(activePlayerId, gameId, onTimeOut, initTimer);
 
     return (
-        <div className="timer-container info-container">
+        <div className="info-container">
             {players.map(player => (
                 <div key={player.id} className={'info-cell'} style={{ display: 'flex', alignItems: 'center' }}>
                     <span className={`turn-dot ${player.color}`} style={{ width: '12px', height: '12px', animation: 'none', marginRight: '6px' }}></span>
