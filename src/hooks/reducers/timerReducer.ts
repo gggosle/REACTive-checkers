@@ -4,7 +4,6 @@ export interface TimerState {
 
 export type TimerAction =
     | { type: 'TICK'; payload: { activePlayerId: number } }
-    | { type: 'RESTART_TIMER'; payload: TimerState };
 
 export const timerReducer = (state: TimerState, action: TimerAction): TimerState => {
     switch (action.type) {
@@ -12,7 +11,7 @@ export const timerReducer = (state: TimerState, action: TimerAction): TimerState
             const id = action.payload.activePlayerId;
             const currentTime = state.playerTimes[id];
 
-            if (currentTime <= 0) return state; 
+            if (currentTime <= 0) return state;
 
             return {
                 ...state,
@@ -21,9 +20,6 @@ export const timerReducer = (state: TimerState, action: TimerAction): TimerState
                     [id]: currentTime - 1
                 }
             };
-        }
-        case 'RESTART_TIMER': {
-            return action.payload;
         }
         default:
             return state;
