@@ -5,6 +5,7 @@ import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
 import {History} from "./History.tsx";
 import {loadGameSession} from "../../logic/storageUtils.ts";
+import {UndoButton} from "./UndoButton.tsx";
 
 export const GameContainer: React.FC = () => {
     const [savedSession] = useState(() => loadGameSession());
@@ -21,6 +22,8 @@ export const GameContainer: React.FC = () => {
         gameId,
         handlePieceClick,
         handleCellClick,
+        handleUndo,
+        canUndo,
         handleTimeout,
         handleRestart,
     } = useCheckers(savedSession?.game);
@@ -57,6 +60,13 @@ export const GameContainer: React.FC = () => {
                     history = {history}
                 />
 
+            </div>
+            <div className="footer">
+                <button className="btn btn-primary" onClick={handleRestart}>
+                    Restart Game
+                </button>
+
+                <UndoButton onUndo={handleUndo} canUndo={canUndo} />
             </div>
         </div>
     );

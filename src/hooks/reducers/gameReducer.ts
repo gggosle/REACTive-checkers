@@ -4,12 +4,14 @@ import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../../logic/
 export interface CheckersState extends GameState {
     selectedPiece: SelectedChecker | null;
     validMoves: Move[];
+    previousState: Omit<CheckersState, 'previousState'> | null;
     winner: Player | null;
 }
 
 export type CheckersAction =
     | { type: 'CLICK_PIECE'; payload: { row: number; col: number } }
     | { type: 'CLICK_CELL'; payload: { row: number; col: number } }
+    | { type: 'UNDO' }
     | { type: 'TIMEOUT' }
     | { type: 'RESTART'; payload: CheckersState };
 
@@ -72,9 +74,19 @@ export const useGameReducer = (state: CheckersState, action: CheckersAction): Ch
             return {
                 ...state,
                 ...nextGameState,
+                previousState: state,
                 selectedPiece: nextSelectedPiece,
                 validMoves: nextValidMoves,
                 winner: nextWinner,
+            };
+        }
+
+        case 'UNDO': {
+            if (!state.previousState) return state;
+
+            return {
+                ...state.previousState,
+                previousState: null
             };
         }
 
