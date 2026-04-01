@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import { CSS_BOARD } from '../../constants';
 import {Color, type Checker as CheckerType} from "../../types/game.ts";
 
@@ -8,7 +8,7 @@ interface CheckerProps {
     onClick: (row: number, col: number) => void;
 }
 
-export const Checker: React.FC<CheckerProps> = ({ piece, isSelected, onClick }) => {
+export const Checker: React.FC<CheckerProps> = memo(({ piece, isSelected, onClick }) => {
     const classNames = [
         CSS_BOARD.CHECKER_CLASS,
         piece.color === Color.WHITE ? CSS_BOARD.PLAYER_1_CHECKER_CLASS : CSS_BOARD.PLAYER_2_CHECKER_CLASS,
@@ -37,4 +37,4 @@ export const Checker: React.FC<CheckerProps> = ({ piece, isSelected, onClick }) 
             }}
         />
     );
-};
+})

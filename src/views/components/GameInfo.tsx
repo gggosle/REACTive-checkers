@@ -1,5 +1,5 @@
 import type {Player} from '../../types/game.ts'
-import React from "react";
+import React, {memo} from "react";
 import {CapturedCount} from "./CapturedCount.tsx";
 import {TurnIndicator} from "./TurnIndicator.tsx";
 
@@ -10,7 +10,7 @@ interface GameInfoProps {
     capturedCount: Record<number, number>;
 }
 
-export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
+export const GameInfo: React.FC<GameInfoProps> = memo(({ currentPlayer,
                                                      players,
                                                       capturedCount,
                                                      }) => {
@@ -26,4 +26,4 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
             />
         </header>
     );
-};
+})

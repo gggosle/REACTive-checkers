@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import { CSS_BOARD } from '../../constants';
 
 interface CellProps {
@@ -9,7 +9,13 @@ interface CellProps {
     onClick: (row: number, col: number) => void;
 }
 
-export const Cell: React.FC<CellProps> = ({ row, col, isBlack, isValidMove, onClick }) => {
+export const Cell: React.FC<CellProps> = memo(({
+                                                                      row,
+                                                                      col,
+                                                                      isBlack,
+                                                                      isValidMove,
+                                                                      onClick,
+                                                                  }) => {
     const classNames = [
         CSS_BOARD.CELL_CLASS,
         isBlack ? CSS_BOARD.BLACK_CELL_CLASS : CSS_BOARD.WHITE_CELL_CLASS,
@@ -24,4 +30,4 @@ export const Cell: React.FC<CellProps> = ({ row, col, isBlack, isValidMove, onCl
             onClick={() => isValidMove && onClick(row, col)}
         />
     );
-};
+})
