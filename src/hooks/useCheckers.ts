@@ -1,11 +1,15 @@
-import { useReducer, useCallback } from 'react';
-import { useGameReducer, type CheckersState } from './reducers/gameReducer';
-import { createInitialGameState } from '../logic/gameInitState.ts';
+import {useCallback, useEffect, useReducer} from 'react';
+import {type CheckersState, useGameReducer} from './reducers/gameReducer';
+import {createInitialGameState} from '../logic/gameInitState.ts';
+import {GAME_CONFIG} from "../constants.ts";
 
-export const useCheckers = () => {
-
+export const useCheckers = (game: CheckersState | undefined) => {
     const initGame = (): CheckersState => {
+        if (game) {
+            return game;
+        }
         const baseState = createInitialGameState();
+
         return {
             ...baseState,
             selectedPiece: null,
@@ -14,7 +18,22 @@ export const useCheckers = () => {
         };
     };
 
+    const createFreshGame = (): CheckersState => {
+        return {
+            ...createInitialGameState(),
+            selectedPiece: null,
+            validMoves: [],
+            winner: null,
+            gameId: Date.now(),
+        };
+    };
+
     const [gameState, dispatchGame] = useReducer(useGameReducer, null, initGame);
+    useEffect(() => {
+        if (gameState) {
+            localStorage.setItem(GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY, JSON.stringify(gameState));
+        }
+    }, [gameState]);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
         dispatchGame({ type: 'CLICK_PIECE', payload: { row, col } });
@@ -25,12 +44,12 @@ export const useCheckers = () => {
     }, []);
 
 
-    const handleTimeout = useCallback((loserId: number) => {
-        dispatchGame({ type: 'TIMEOUT', payload: { loserId } });
+    const handleTimeout = useCallback(() => {
+        dispatchGame({ type: 'TIMEOUT' });
     }, []);
 
     const handleRestart = useCallback(() => {
-        dispatchGame({ type: 'RESTART', payload: initGame() });
+        dispatchGame({ type: 'RESTART', payload: createFreshGame() });
     }, []);
 
     return {

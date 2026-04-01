@@ -1,5 +1,6 @@
-import type { Player } from '../../types/game.ts'
+import type {Player, TimerState} from '../../types/game.ts'
 import {TimerController} from "./TimerController.tsx";
+import React from "react";
 
 
 interface GameInfoProps {
@@ -8,7 +9,8 @@ interface GameInfoProps {
     capturedCount: Record<number, number>;
     winner: Player | null;
     gameId: number;
-    onTimeOut: (loserId: number) => void;
+    initTimer: TimerState | undefined;
+    onTimeOut: () => void;
 }
 
 export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
@@ -16,9 +18,8 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                                                       capturedCount,
                                                       winner,
                                                       gameId,
+                                                      initTimer,
                                                       onTimeOut }) => {
-
-
     return (
         <header className="header">
             <h1 className="title">CHECKERS</h1>
@@ -31,7 +32,9 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
                 key={gameId}
                 activePlayerId={winner ? undefined : currentPlayer.id}
                 players={players}
+                gameId={gameId}
                 onTimeOut={onTimeOut}
+                initTimer={initTimer}
             />
             <div className="info-container">
                 {players.map(player => (
