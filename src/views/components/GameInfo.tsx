@@ -1,13 +1,22 @@
-import React from 'react';
 import type { Player } from '../../types/game.ts'
+import {TimerController} from "./TimerController.tsx";
+
 
 interface GameInfoProps {
     currentPlayer: Player;
     players: Player[];
     capturedCount: Record<number, number>;
+    winner: Player | null;
+    onTimeOut: (loserId: number) => void;
 }
 
-export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer, players, capturedCount }) => {
+export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer,
+                                                      players,
+                                                      capturedCount,
+                                                      winner,
+                                                      onTimeOut }) => {
+
+
     return (
         <header className="header">
             <h1 className="title">CHECKERS</h1>
@@ -18,6 +27,11 @@ export const GameInfo: React.FC<GameInfoProps> = ({ currentPlayer, players, capt
                     <span id="turn-text">{currentPlayer.name}'s Turn</span>
                 </div>
             </div>
+            <TimerController
+                activePlayerId={winner ? undefined : currentPlayer.id}
+                players={players}
+                onTimeOut={onTimeOut}
+            />
             <div className="captured-pieces-container">
                 {players.map(player => (
                     <div key={player.id} className="captured-pieces-cell">

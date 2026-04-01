@@ -1,5 +1,5 @@
-import type {Move, SelectedChecker, Player, GameState, Checker} from '../types/game.ts';
-import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../logic/gameRules';
+import type {Move, SelectedChecker, Player, GameState, Checker} from '../../types/game.ts';
+import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../../logic/gameRules';
 
 export interface CheckersState extends GameState {
     selectedPiece: SelectedChecker | null;

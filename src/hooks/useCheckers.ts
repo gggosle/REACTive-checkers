@@ -1,37 +1,62 @@
 import { useReducer, useCallback } from 'react';
-import { useGameReducer, type CheckersState } from './useGameReducer';
+import { useGameReducer, type CheckersState } from './reducers/gameReducer';
+import { timerReducer, type TimerState } from './reducers/timerReducer';
 import { createInitialGameState } from '../logic/gameInitState.ts';
 
 export const useCheckers = () => {
 
-    const initGameState = (): CheckersState => {
-        const baseGameState = createInitialGameState();
+    const initGame = (): CheckersState => {
+        const baseState = createInitialGameState();
         return {
-            ...baseGameState,
+            ...baseState,
             selectedPiece: null,
             validMoves: [],
             winner: null,
         };
     };
 
-    const [state, dispatch] = useReducer(useGameReducer, null, initGameState);
+    const initTimer = (): TimerState => {
+        return {
+            playerTimes: { 1: 300, 2: 300 }
+        };
+    };
+
+    const [gameState, dispatchGame] = useReducer(useGameReducer, null, initGame);
+    const [timerState, dispatchTimer] = useReducer(timerReducer, null, initTimer);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
-        dispatch({ type: 'CLICK_PIECE', payload: { row, col } });
+        dispatchGame({ type: 'CLICK_PIECE', payload: { row, col } });
     }, []);
 
     const handleCellClick = useCallback((row: number, col: number) => {
-        dispatch({ type: 'CLICK_CELL', payload: { row, col } });
+        dispatchGame({ type: 'CLICK_CELL', payload: { row, col } });
+    }, []);
+
+    const handleTick = useCallback(() => {
+        if (!gameState.winner) {
+            dispatchTimer({
+                type: 'TICK',
+                payload: { activePlayerId: gameState.currentPlayer.id }
+            });
+        }
+    }, [gameState.winner, gameState.currentPlayer.id]);
+
+    const handleTimeout = useCallback((loserId: number) => {
+        dispatchGame({ type: 'TIMEOUT', payload: { loserId } });
     }, []);
 
     const handleRestart = useCallback(() => {
-        dispatch({ type: 'RESTART', payload: initGameState() });
+        dispatchGame({ type: 'RESTART', payload: initGame() });
+        dispatchTimer({ type: 'RESTART_TIMER', payload: initTimer() });
     }, []);
 
     return {
-        ...state,
+        ...gameState,
+        ...timerState,
         handlePieceClick,
         handleCellClick,
-        handleRestart,
+        handleTick,
+        handleTimeout,
+        handleRestart
     };
 };
