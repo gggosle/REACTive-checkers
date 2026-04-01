@@ -6,6 +6,7 @@ import {GameOverModal} from "./GameOverModal.tsx";
 import {History} from "./History.tsx";
 import {loadGameSession} from "../../logic/storageUtils.ts";
 import {UndoButton} from "./UndoButton.tsx";
+import {TimerController} from "./TimerController.tsx";
 
 export const GameContainer: React.FC = () => {
     const [savedSession] = useState(() => loadGameSession());
@@ -39,7 +40,12 @@ export const GameContainer: React.FC = () => {
                 currentPlayer={currentPlayer}
                 players={players}
                 capturedCount={capturedCount}
-                winner={winner}
+            />
+
+            <TimerController
+                key={gameId}
+                activePlayerId={winner ? undefined : currentPlayer.id}
+                players={players}
                 gameId={gameId}
                 onTimeOut={handleTimeout}
                 initTimer={savedSession?.timer}
