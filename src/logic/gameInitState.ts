@@ -13,5 +13,6 @@ export function createInitialGameState(): GameState {
         hasJumpsAvailable: false,
         capturedCount: {1: 0, 2: 0},
         history: [],
+        gameId: Date.now(),
     }
 }

@@ -1,5 +1,5 @@
-import type {Move, SelectedChecker, Player, GameState, Checker} from '../types/game.ts';
-import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../logic/gameRules';
+import type {Move, SelectedChecker, Player, GameState, Checker} from '../../types/game.ts';
+import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../../logic/gameRules';
 
 export interface CheckersState extends GameState {
     selectedPiece: SelectedChecker | null;
@@ -10,6 +10,7 @@ export interface CheckersState extends GameState {
 export type CheckersAction =
     | { type: 'CLICK_PIECE'; payload: { row: number; col: number } }
     | { type: 'CLICK_CELL'; payload: { row: number; col: number } }
+    | { type: 'TIMEOUT'; payload: { loserId: number } }
     | { type: 'RESTART'; payload: CheckersState };
 
 export const useGameReducer = (state: CheckersState, action: CheckersAction): CheckersState => {
@@ -74,6 +75,17 @@ export const useGameReducer = (state: CheckersState, action: CheckersAction): Ch
                 selectedPiece: nextSelectedPiece,
                 validMoves: nextValidMoves,
                 winner: nextWinner,
+            };
+        }
+
+        case 'TIMEOUT': {
+            if (state.winner) return state;
+
+            const winner = state.players.find(p => p.id !== action.payload.loserId) || null;
+
+            return {
+                ...state,
+                winner
             };
         }
 
