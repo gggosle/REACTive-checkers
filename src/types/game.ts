@@ -53,10 +53,6 @@ export interface PlayerTimes {
 
 export type HistoryState = MoveEntry[];
 
-export interface InfoState {
-    currentPlayer: Player;
-}
-
 export interface TimerState {
     playerTimes: PlayerTimes;
     gameId: number;
@@ -73,14 +69,4 @@ export interface GameState {
     gameId: number;
 }
 
-export interface ClonedState {
-    board: (Checker | null)[][];
-    currentPlayer: Player;
-    mustJumpPiece: Position | null;
-    hasJumpsAvailable: boolean;
-    moveHistory: MoveEntry[];
-}
 
-export interface LiveState extends ClonedState {
-    playerTimes?: PlayerTimes;
-}

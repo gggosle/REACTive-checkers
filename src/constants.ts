@@ -29,19 +29,7 @@ export const CSS_BOARD = {
     CURSOR_CLASS: 'keyboard-cursor',
 };
 
-export const CSS_INFO = {
-    TURN_DOT_ID: 'turn-dot',
-    TURN_NEXT_ID: 'turn-text',
-    WIN_MODAL_ID: 'win-modal',
-    WINNER_TEXT_ID: 'winner-text',
-    PLAY_AGAIN_BTN_ID: 'play-again-btn',
-    ACTIVE_CLASS: 'active',
-    TIMER_PLAYER_1_ID: 'timer-player-1',
-    TIMER_PLAYER_2_ID: 'timer-player-2',
-};
-
 export const CSS_HISTORY = {
-    LIST_ID: 'history-list',
     ITEM_CLASS: 'history-item',
     SELECTED_CLASS: 'selected',
     HIGHLIGHT_CLASS: 'history-highlight',
