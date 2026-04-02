@@ -1,12 +1,7 @@
-import type {Move, SelectedChecker, Player, GameState, Checker} from '../../types/game.ts';
-import {getValidMoves, hasAnyValidMoves, applyMove, getPiece} from '../../logic/gameRules';
+import type {Checker, CheckersState, Move} from '../../types/game.ts';
+import {applyMove, getPiece} from '../../logic/gameRules';
+import {selectValidMoves, selectWinner} from "../../selectors/gameSelectors.ts";
 
-export interface CheckersState extends GameState {
-    selectedPiece: SelectedChecker | null;
-    validMoves: Move[];
-    previousState: Omit<CheckersState, 'previousState'> | null;
-    winner: Player | null;
-}
 
 export type CheckersAction =
     | { type: 'CLICK_PIECE'; payload: { row: number; col: number } }
@@ -20,27 +15,27 @@ export const gameReducer = (state: CheckersState, action: CheckersAction): Check
         case 'CLICK_PIECE': {
             const { row, col } = action.payload;
 
-            if (state.winner) return state;
+            if (selectWinner(state)) return state;
 
             const piece : Checker | null = getPiece(state.board, row, col);
-
             if (!piece || piece.direction !== state.currentPlayer.moveDir) return state;
 
             if (state.selectedPiece?.row === row && state.selectedPiece?.col === col && !state.mustJumpPiece) {
                 return {
                     ...state,
                     selectedPiece: null,
-                    validMoves: []
                 };
             }
 
-            const moves = getValidMoves(state.board, state.currentPlayer.moveDir, state.mustJumpPiece, state.hasJumpsAvailable, row, col);
-
+            const moves = selectValidMoves({
+                ...state,
+                selectedPiece: { row, col },
+            });
             if (moves.length > 0) {
+                console.log("damn")
                 return {
                     ...state,
                     selectedPiece: { row, col },
-                    validMoves: moves
                 };
             }
 
@@ -50,25 +45,18 @@ export const gameReducer = (state: CheckersState, action: CheckersAction): Check
         case 'CLICK_CELL': {
             const { row, col } = action.payload;
 
-            if (!state.selectedPiece || state.winner) return state;
+            if (!state.selectedPiece || selectWinner(state)) return state;
 
-            const move = state.validMoves.find(m => m.row === row && m.col === col);
+            const move = selectValidMoves(state).find((m: Move) => m.row === row && m.col === col);
 
             if (!move) return state;
 
             const nextGameState = applyMove(state, state.selectedPiece, move);
 
             let nextSelectedPiece = null;
-            let nextValidMoves: Move[] = [];
-            let nextWinner : Player | null = state.winner;
 
             if (nextGameState.mustJumpPiece) {
                 nextSelectedPiece = nextGameState.mustJumpPiece;
-                nextValidMoves = getValidMoves(nextGameState.board, nextGameState.currentPlayer.moveDir, nextGameState.mustJumpPiece, nextGameState.hasJumpsAvailable, nextGameState.mustJumpPiece.row, nextGameState.mustJumpPiece.col);
-            } else {
-                if (!hasAnyValidMoves(nextGameState.board, nextGameState.currentPlayer.moveDir, nextGameState.mustJumpPiece, nextGameState.hasJumpsAvailable)) {
-                    nextWinner = nextGameState.players.find((p: Player) => p.id !== nextGameState.currentPlayer.id) || null;
-                }
             }
 
             return {
@@ -76,8 +64,6 @@ export const gameReducer = (state: CheckersState, action: CheckersAction): Check
                 ...nextGameState,
                 previousState: state,
                 selectedPiece: nextSelectedPiece,
-                validMoves: nextValidMoves,
-                winner: nextWinner,
             };
         }
 
@@ -91,13 +77,9 @@ export const gameReducer = (state: CheckersState, action: CheckersAction): Check
         }
 
         case 'TIMEOUT': {
-            if (state.winner) return state;
-
-            const winner = state.players.find(p => p.id !== state.currentPlayer.id) || null;
-
             return {
                 ...state,
-                winner
+                isTimeOut: true,
             };
         }
 

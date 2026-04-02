@@ -63,10 +63,14 @@ export interface GameState {
     players: Player[];
     currentPlayer: Player;
     mustJumpPiece: Position | null;
-    hasJumpsAvailable: boolean;
-    capturedCount: Record<number, number>;
     history: HistoryState;
     gameId: number;
 }
 
+
+export interface CheckersState extends GameState {
+    selectedPiece: SelectedChecker | null;
+    previousState: Omit<CheckersState, 'previousState'> | null;
+    isTimeOut: boolean;
+}
 

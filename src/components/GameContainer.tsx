@@ -20,6 +20,7 @@ export const GameContainer: React.FC = () => {
         validMoves,
         history,
         winner,
+        isTimeOut,
         gameId,
         handlePieceClick,
         handleCellClick,
@@ -44,7 +45,7 @@ export const GameContainer: React.FC = () => {
 
             <TimerController
                 key={gameId}
-                activePlayerId={winner ? undefined : currentPlayer.id}
+                activePlayerId={isTimeOut ? undefined : currentPlayer.id}
                 players={players}
                 gameId={gameId}
                 onTimeOut={handleTimeout}

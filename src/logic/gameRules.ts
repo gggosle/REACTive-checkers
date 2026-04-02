@@ -156,7 +156,6 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
 
     const newBoard = state.board.map(row => [...row]);
     const newHistory = [...state.history];
-    const newCapturedCount = { ...state.capturedCount };
 
     const movedPiece = { ...piece, row: toMove.row, col: toMove.col };
     newBoard[from.row][from.col] = null;
@@ -166,7 +165,6 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
 
     if (toMove.type === 'jump' && toMove.captured) {
         newBoard[toMove.captured.row][toMove.captured.col] = null;
-        newCapturedCount[state.currentPlayer.id]++;
     }
 
     let promoted = false;
@@ -181,9 +179,7 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
                 ...state,
                 board: newBoard,
                 history: newHistory,
-                capturedCount: newCapturedCount,
-                mustJumpPiece: { row: toMove.row, col: toMove.col },
-                hasJumpsAvailable: true
+                mustJumpPiece: { row: toMove.row, col: toMove.col }
             };
         }
     }
@@ -194,9 +190,7 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
         ...state,
         board: newBoard,
         history: newHistory,
-        capturedCount: newCapturedCount,
         mustJumpPiece: null,
-        currentPlayer: nextPlayer,
-        hasJumpsAvailable: anyPlayerJumpsAvailable(newBoard, nextPlayer.moveDir)
+        currentPlayer: nextPlayer
     };
 }
