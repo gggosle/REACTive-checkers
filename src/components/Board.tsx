@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, {memo, useMemo} from 'react';
 import { GAME_CONFIG } from '../constants.ts';
 import type {Move, SelectedChecker, Checker as CheckerType} from "../types/game.ts";
 import { Cell } from './Cell.tsx';
@@ -12,7 +12,7 @@ interface BoardProps {
     onCellClick: (row: number, col: number) => void;
 }
 
-export const Board: React.FC<BoardProps> = ({ boardState, selectedPiece, validMoves, onPieceClick, onCellClick }) => {
+export const Board: React.FC<BoardProps> = memo(({ boardState, selectedPiece, validMoves, onPieceClick, onCellClick }) => {
 
     const activePieces = useMemo(() => {
         const flatList: CheckerType[] = [];
@@ -59,4 +59,4 @@ export const Board: React.FC<BoardProps> = ({ boardState, selectedPiece, validMo
             })}
         </div>
     );
-};
+});
