@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Player } from '../../types/game.ts'
+import type { Player } from '../types/game.ts'
 
 interface GameOverModalProps {
     winner: Player | null;

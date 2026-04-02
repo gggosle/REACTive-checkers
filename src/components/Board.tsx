@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { GAME_CONFIG } from '../../constants';
-import type {Move, SelectedChecker, Checker as CheckerType} from "../../types/game.ts";
-import { Cell } from './Cell';
-import { Checker } from './Checker';
+import { GAME_CONFIG } from '../constants.ts';
+import type {Move, SelectedChecker, Checker as CheckerType} from "../types/game.ts";
+import { Cell } from './Cell.tsx';
+import { Checker } from './Checker.tsx';
 
 interface BoardProps {
     boardState: (CheckerType | null)[][];

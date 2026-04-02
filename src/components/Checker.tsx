@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
-import { CSS_BOARD } from '../../constants';
-import {Color, type Checker as CheckerType} from "../../types/game.ts";
+import { CSS_BOARD } from '../constants.ts';
+import {Color, type Checker as CheckerType} from "../types/game.ts";
 
 interface CheckerProps {
     piece: CheckerType;

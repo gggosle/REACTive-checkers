@@ -1,4 +1,4 @@
-import type {Player} from '../../types/game.ts'
+import type {Player} from '../types/game.ts'
 import React from "react";
 
 

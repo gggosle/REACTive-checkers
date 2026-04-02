@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import { useCheckers } from '../../hooks/useCheckers.ts';
-import { Board } from './Board';
+import { useCheckers } from '../hooks/useCheckers.ts';
+import { Board } from './Board.tsx';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
 import {History} from "./History.tsx";
-import {loadGameSession} from "../../hooks/useLocalStorage.ts";
+import {loadGameSession} from "../hooks/useLocalStorage.ts";
 import {UndoButton} from "./UndoButton.tsx";
 import {TimerController} from "./TimerController.tsx";
 

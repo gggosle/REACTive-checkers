@@ -1,7 +1,7 @@
 import React from 'react';
-import type {Player, TimerState} from '../../types/game.ts';
-import { PlayerTimer } from './PlayerTimer';
-import { useGameClock } from '../../hooks/useGameClock';
+import type {Player, TimerState} from '../types/game.ts';
+import { PlayerTimer } from './PlayerTimer.tsx';
+import { useGameClock } from '../hooks/useGameClock.ts';
 
 export interface TimerControllerProps {
     activePlayerId: number | undefined;

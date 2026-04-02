@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import { CSS_BOARD } from '../../constants';
+import { CSS_BOARD } from '../constants.ts';
 
 interface CellProps {
     row: number;

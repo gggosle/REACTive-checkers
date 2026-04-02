@@ -1,4 +1,4 @@
-import type {Player} from '../../types/game.ts'
+import type {Player} from '../types/game.ts'
 import React, {memo} from "react";
 import {CapturedCount} from "./CapturedCount.tsx";
 import {TurnIndicator} from "./TurnIndicator.tsx";

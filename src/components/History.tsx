@@ -1,5 +1,5 @@
 import React from 'react';
-import type {HistoryState} from "../../types/game.ts";
+import type {HistoryState} from "../types/game.ts";
 
 interface HistoryProps {
     history: HistoryState;
