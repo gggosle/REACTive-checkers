@@ -15,7 +15,7 @@ export type CheckersAction =
     | { type: 'TIMEOUT' }
     | { type: 'RESTART'; payload: CheckersState };
 
-export const useGameReducer = (state: CheckersState, action: CheckersAction): CheckersState => {
+export const gameReducer = (state: CheckersState, action: CheckersAction): CheckersState => {
     switch (action.type) {
         case 'CLICK_PIECE': {
             const { row, col } = action.payload;

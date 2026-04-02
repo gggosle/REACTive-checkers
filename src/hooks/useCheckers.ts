@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useReducer} from 'react';
-import {type CheckersState, useGameReducer} from './reducers/gameReducer';
+import {type CheckersState, gameReducer} from './reducers/gameReducer';
 import {createInitialGameState} from '../logic/gameInitState.ts';
 import {useLocalStorage} from './useLocalStorage.ts';
 
@@ -26,7 +26,7 @@ export const useCheckers = (game: CheckersState | undefined) => {
     };
 
 
-    const [gameState, dispatchGame] = useReducer(useGameReducer, null, initGame);
+    const [gameState, dispatchGame] = useReducer(gameReducer, null, initGame);
     useEffect(() => {
         if (gameState) {
             saveGameState(gameState);
