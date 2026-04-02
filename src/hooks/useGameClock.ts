@@ -2,6 +2,7 @@ import { useEffect, useReducer, useRef } from "react";
 import { timerReducer } from "./reducers/timerReducer.ts";
 import { GAME_CONFIG } from "../constants";
 import type { TimerState } from "../types/game.ts";
+import { useLocalStorage, useTimerEmergencySync } from "./useLocalStorage.ts";
 
 export const useGameClock = (
     activePlayerId: number | undefined,
@@ -9,6 +10,7 @@ export const useGameClock = (
     onTimeOut: () => void,
     timer: TimerState | undefined
 ) => {
+    const { saveTimerState } = useLocalStorage();
 
     const initTimer = (initialTimer: TimerState | undefined): TimerState => {
         if (initialTimer && initialTimer.gameId === gameId) {
@@ -28,18 +30,11 @@ export const useGameClock = (
         latestTimerRef.current = timerState;
     }, [timerState]);
 
-    useEffect(() => {
-        localStorage.setItem(GAME_CONFIG.LOCAL_STORAGE_TIMER_STATE_KEY, JSON.stringify(latestTimerRef.current));
-    }, [activePlayerId]);
+    useTimerEmergencySync(latestTimerRef);
 
     useEffect(() => {
-        const saveOnExit = () => {
-            localStorage.setItem(GAME_CONFIG.LOCAL_STORAGE_TIMER_STATE_KEY, JSON.stringify(latestTimerRef.current));
-        };
-
-        window.addEventListener('beforeunload', saveOnExit);
-        return () => window.removeEventListener('beforeunload', saveOnExit);
-    }, []);
+        saveTimerState(latestTimerRef.current);
+    }, [activePlayerId, saveTimerState]);
 
     useEffect(() => {
         if (!activePlayerId) return;

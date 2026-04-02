@@ -4,7 +4,7 @@ import { Board } from './Board';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
 import {History} from "./History.tsx";
-import {loadGameSession} from "../../logic/storageUtils.ts";
+import {loadGameSession} from "../../hooks/useLocalStorage.ts";
 import {UndoButton} from "./UndoButton.tsx";
 import {TimerController} from "./TimerController.tsx";
 
