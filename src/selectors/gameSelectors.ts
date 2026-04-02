@@ -4,6 +4,10 @@ import {
     hasAnyValidMoves,
     anyPlayerJumpsAvailable
 } from '../logic/gameRules';
+import {calculateInitialPieceCount} from "../logic/boardUtils.ts";
+import {GAME_CONFIG, GAME_RULES} from "../constants.ts";
+
+const CHECKERS_NUMBER = calculateInitialPieceCount(GAME_CONFIG.BOARD_SIZE, GAME_RULES.PIECE_ROWS_COUNT);
 
 export const selectHasJumpsAvailable = (state: CheckersState): boolean => {
     return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
@@ -61,7 +65,7 @@ export const selectCapturedCount = (state: CheckersState): Record<string, number
     }
 
     return {
-        [state.players[0].id]: 12 - p1PiecesOnBoard, //TODO: eliminate magic nums
-        [state.players[1].id]: 12 - p0PiecesOnBoard
+        [state.players[0].id]: CHECKERS_NUMBER - p1PiecesOnBoard,
+        [state.players[1].id]: CHECKERS_NUMBER - p0PiecesOnBoard
     };
 };

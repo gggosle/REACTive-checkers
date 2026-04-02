@@ -46,7 +46,7 @@ export const useCheckers = (game: CheckersState | undefined) => {
     }, []);
 
     const validMoves = useMemo(() => selectValidMoves(gameState), [gameState]);
-    const winner = useMemo(() => selectWinner(gameState), [gameState]); //TODO: not on every gameState change, but on other fields
+    const winner = useMemo(() => selectWinner(gameState), [gameState]); //TODO: split into separate useReducer hooks
     const capturedCount = useMemo(() => selectCapturedCount(gameState), [gameState]); //TODO: the same as above
 
     return {
