@@ -21,5 +21,6 @@ export function createInitialCheckersState(): CheckersState {
         selectedPiece: null,
         previousState: null,
         gameId: Date.now(),
+        isTimeOut: false,
     };
 }
