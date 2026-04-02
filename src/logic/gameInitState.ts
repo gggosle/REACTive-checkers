@@ -1,8 +1,9 @@
 import type { GameState } from "../types/game.ts";
 import { createInitialBoard } from "./boardUtils.ts";
 import { generatePlayers } from "./playerUtils.ts";
+import type {CheckersState} from "../hooks/reducers/gameReducer.ts";
 
-export function createInitialGameState(): GameState {
+function createInitialGameState(): GameState {
     const initialPlayers = generatePlayers();
 
     return {
@@ -15,4 +16,15 @@ export function createInitialGameState(): GameState {
         history: [],
         gameId: Date.now(),
     }
+}
+
+export function createInitialCheckersState(): CheckersState {
+    return {
+        ...createInitialGameState(),
+        selectedPiece: null,
+        validMoves: [],
+        previousState: null,
+        winner: null,
+        gameId: Date.now(),
+    };
 }

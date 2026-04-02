@@ -1,30 +1,18 @@
 import {useCallback, useEffect, useReducer} from 'react';
 import {type CheckersState, gameReducer} from './reducers/gameReducer';
-import {createInitialGameState} from '../logic/gameInitState.ts';
+import {createInitialCheckersState} from '../logic/gameInitState.ts';
 import {useLocalStorage} from './useLocalStorage.ts';
 
 export const useCheckers = (game: CheckersState | undefined) => {
-    const { saveGameState, clearStorage } = useLocalStorage();
+    const { saveGameState } = useLocalStorage();
 
     const initGame = (): CheckersState => {
         if (game) {
             return game;
         }
 
-        return createFreshGame();
+        return createInitialCheckersState();
     };
-
-    const createFreshGame = (): CheckersState => {
-        return {
-            ...createInitialGameState(),
-            selectedPiece: null,
-            validMoves: [],
-            previousState: null,
-            winner: null,
-            gameId: Date.now(),
-        };
-    };
-
 
     const [gameState, dispatchGame] = useReducer(gameReducer, null, initGame);
     useEffect(() => {
@@ -52,9 +40,8 @@ export const useCheckers = (game: CheckersState | undefined) => {
     }, []);
 
     const handleRestart = useCallback(() => {
-        clearStorage();
-        dispatchGame({ type: 'RESTART', payload: createFreshGame() });
-    }, [clearStorage]);
+        dispatchGame({ type: 'RESTART', payload: createInitialCheckersState() });
+    }, []);
 
 
     return {
