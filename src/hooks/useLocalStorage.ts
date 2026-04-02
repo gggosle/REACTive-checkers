@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import type { TimerState } from '../types/game.ts';
-import type { CheckersState } from './reducers/gameReducer.ts';
+import type {CheckersState, TimerState} from '../types/game.ts';
 import {GAME_CONFIG} from "../constants.ts";
 
 export const GAME_KEY = GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY;
