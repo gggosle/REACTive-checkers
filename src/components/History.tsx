@@ -13,12 +13,13 @@ export const History: React.FC<HistoryProps> = ({ history }) => {
             <h2 className="history-title">Move History</h2>
             <div className="history-list-container">
                 <ul id="history-list">
-                    {history.map((move) => {
+                    {history.map((move, i) => {
+                        const turnPrefix = `${i + 1}. `;
                         const text = createMoveNotation(move)
 
                         return (
                             <li key={move.id} className="history-item">
-                                {text}
+                                {turnPrefix + text}
                             </li>
                         );
                     })}

@@ -9,26 +9,23 @@ function toAlgebraic(row: number, col: number): string {
 }
 
 export function createMoveNotation(moveEntry: MoveEntry): string {
-    const turnNumber = moveEntry.id;
-    const prefix = `${turnNumber}. `;
     const fromAlg = toAlgebraic(moveEntry.from.row, moveEntry.from.col);
     const toAlg = toAlgebraic(moveEntry.to.row, moveEntry.to.col);
 
     const separator = moveEntry.isJump ? 'x' : '-';
 
-    return `${prefix}${fromAlg}${separator}${toAlg}`;
+    return `${fromAlg}${separator}${toAlg}`;
 }
 
 export function generateMoveEntry(
     playerId: number,
     from: Position,
     to: Move,
-    currentHistoryLength: number,
     isJump: boolean,
     promotedToKing: boolean
 ): MoveEntry {
     return {
-        id: currentHistoryLength + 1,
+        id: Date.now(),
         playerId,
         from,
         to: { row: to.row, col: to.col },

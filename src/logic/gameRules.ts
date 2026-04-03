@@ -163,7 +163,7 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
     newBoard[from.row][from.col] = null;
     newBoard[toMove.row][toMove.col] = movedPiece;
 
-    newHistory.push(generateMoveEntry(state.currentPlayer.id, from, toMove, newHistory.length,
+    newHistory.push(generateMoveEntry(state.currentPlayer.id, from, toMove,
         isJump, isPromoted));
 
     if (isJump && toMove.captured) {
