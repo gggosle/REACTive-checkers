@@ -2,11 +2,6 @@ import { GAME_CONFIG, GAME_RULES } from '../constants.js';
 import type {Board, Checker, MoveEntry} from '../types/game';
 import {isBlackSquare} from "./gameRules.ts";
 
-
-function generatePieceId(): string {
-    return Math.random().toString(36).substring(2, 9);
-}
-
 export function createInitialBoard(): Board {
     const board: Board = [];
 
@@ -18,10 +13,11 @@ export function createInitialBoard(): Board {
                 rowArray.push(null);
                 continue;
             }
+            const stableId = `piece-${row}-${col}`;
 
             if (row < GAME_RULES.PIECE_ROWS_COUNT) {
                 rowArray.push({
-                    id: generatePieceId(),
+                    id: stableId,
                     color: 'white',
                     row,
                     col,
@@ -30,7 +26,7 @@ export function createInitialBoard(): Board {
                 });
             } else if (row >= GAME_CONFIG.BOARD_SIZE - GAME_RULES.PIECE_ROWS_COUNT) {
                 rowArray.push({
-                    id: generatePieceId(),
+                    id: stableId,
                     color: 'black',
                     row,
                     col,
