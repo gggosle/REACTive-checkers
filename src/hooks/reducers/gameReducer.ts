@@ -33,7 +33,6 @@ export const gameReducer = (state: GameState, action: CheckersAction): GameState
                 selectedPiece: { row, col },
             });
             if (moves.length > 0) {
-                console.log("damn")
                 return {
                     ...state,
                     selectedPiece: { row, col },

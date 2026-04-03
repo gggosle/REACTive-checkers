@@ -28,7 +28,7 @@ export function generateMoveEntry(
     promotedToKing: boolean
 ): MoveEntry {
     return {
-        id: `move-${currentHistoryLength}-${Date.now()}`,
+        id: currentHistoryLength + 1,
         playerId,
         from,
         to: { row: to.row, col: to.col },

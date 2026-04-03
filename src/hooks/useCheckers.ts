@@ -2,15 +2,38 @@ import {useCallback, useEffect, useMemo, useReducer} from 'react';
 import {gameReducer} from './reducers/gameReducer';
 import {createInitialGameState} from '../logic/gameInitState.ts';
 import {useLocalStorage} from './useLocalStorage.ts';
-import type {GameState, MoveEntry} from "../types/game.ts";
+import type {GameState, SavedGameState} from "../types/game.ts";
 import {selectCapturedCount, selectValidMoves, selectWinner} from "../selectors/gameSelectors.ts";
+import {reconstructBoard} from "../logic/boardUtils.ts";
 
-export const useCheckers = (history: MoveEntry[] | undefined) => {
-    const { saveGameState } = useLocalStorage();
+export const useCheckers = (savedState: SavedGameState | undefined) => {
+    const { saveGame } = useLocalStorage();
 
     const initGame = (): GameState => {
-        if (history) {
-            return createInitialGameState(history);
+        if (savedState && savedState.history && savedState.players && savedState.players.length > 0) {
+            const restoredBoard = reconstructBoard(savedState.history);
+            let activePlayer = savedState.players[0];
+
+            if (savedState.history.length > 0) {
+                const lastMove = savedState.history[savedState.history.length - 1];
+
+                if (savedState.mustJumpPiece) {
+                    activePlayer = savedState.players.find(p => p.id === lastMove.playerId) || savedState.players[0];
+                } else {
+                    activePlayer = savedState.players.find(p => p.id !== lastMove.playerId) || savedState.players[0];
+                }
+            }
+
+            return {
+                board: restoredBoard,
+                players: savedState.players,
+                currentPlayer: activePlayer,
+                history: savedState.history,
+                mustJumpPiece: savedState.mustJumpPiece || null,
+                gameId: savedState.gameId || Date.now(),
+                selectedPiece: null,
+                isTimeOut: false,
+            } as GameState;
         }
 
         return createInitialGameState();
@@ -19,9 +42,9 @@ export const useCheckers = (history: MoveEntry[] | undefined) => {
     const [gameState, dispatchGame] = useReducer(gameReducer, null, initGame);
     useEffect(() => {
         if (gameState) {
-            saveGameState(gameState.history);
+            saveGame(gameState);
         }
-    }, [gameState, saveGameState]);
+    }, [gameState, saveGame]);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
         dispatchGame({ type: 'CLICK_PIECE', payload: { row, col } });

@@ -40,7 +40,7 @@ export interface Move extends Position {
 }
 
 export interface MoveEntry {
-    id: string;
+    id: number;
     playerId: number;
     from: Position;
     to: Position;
@@ -70,6 +70,13 @@ export interface GameState {
     gameId: number;
     selectedPiece: SelectedChecker | null;
     isTimeOut: boolean;
+}
+
+export interface SavedGameState {
+    gameId: number;
+    history: HistoryState;
+    players: Player[];
+    mustJumpPiece: Position | null;
 }
 
 

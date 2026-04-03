@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import type {MoveEntry, TimerState} from '../types/game.ts';
+import type {GameState, SavedGameState, TimerState} from '../types/game.ts';
 import {GAME_CONFIG} from "../constants.ts";
 
 export const GAME_KEY = GAME_CONFIG.LOCAL_STORAGE_GAME_STATE_KEY;
 export const TIMER_KEY = GAME_CONFIG.LOCAL_STORAGE_TIMER_STATE_KEY;
 
-export const loadGameSession = (): { history: MoveEntry[]; timer: TimerState } | null => {
+export const loadGameSession = (): { game: SavedGameState; timer: TimerState } | null => {
     try {
         const savedGame = localStorage.getItem(GAME_KEY);
         const savedTimer = localStorage.getItem(TIMER_KEY);
@@ -14,15 +14,12 @@ export const loadGameSession = (): { history: MoveEntry[]; timer: TimerState } |
             const parsedGame = JSON.parse(savedGame);
             const parsedTimer = JSON.parse(savedTimer);
             if (parsedGame.gameId === parsedTimer.gameId) {
-                return { history: parsedGame, timer: parsedTimer };
+                return { game: parsedGame, timer: parsedTimer };
             }
         }
     } catch {
         console.warn("Save data corrupted. Starting fresh.");
     }
-
-    localStorage.removeItem(GAME_KEY);
-    localStorage.removeItem(TIMER_KEY);
     return null;
 };
 
@@ -38,9 +35,19 @@ export const useTimerEmergencySync = (timerRef: React.MutableRefObject<TimerStat
 };
 
 export const useLocalStorage = () => {
-    const saveGameState = useCallback((history: MoveEntry[]) => {
-        localStorage.setItem(GAME_KEY, JSON.stringify(history));
-    }, []);
+    const saveGame = (state: GameState) => {
+        try {
+            const stateToSave: SavedGameState = {
+                gameId: state.gameId,
+                history: state.history,
+                players: state.players,
+                mustJumpPiece: state.mustJumpPiece
+            };
+            localStorage.setItem(GAME_KEY, JSON.stringify(stateToSave));
+        } catch (e) {
+            console.error('Failed to save game state to local storage', e);
+        }
+    };
 
     const saveTimerState = useCallback((state: TimerState) => {
         localStorage.setItem(TIMER_KEY, JSON.stringify(state));
@@ -52,7 +59,7 @@ export const useLocalStorage = () => {
     }, []);
 
     return {
-        saveGameState,
+        saveGame,
         saveTimerState,
         clearStorage
     };

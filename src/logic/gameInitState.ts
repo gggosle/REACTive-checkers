@@ -1,21 +1,13 @@
-import type {Board, GameState, MoveEntry} from "../types/game.ts";
-import {createInitialBoard, reconstructBoard} from "./boardUtils.ts";
+import type {GameState} from "../types/game.ts";
+import {createInitialBoard} from "./boardUtils.ts";
 import { generatePlayers } from "./playerUtils.ts";
 
 
-export function createInitialGameState(history: MoveEntry[] = []): GameState {
+export function createInitialGameState(): GameState {
     const initialPlayers = generatePlayers();
-    let board: Board;
-
-    if (history.length > 0) {
-        board = reconstructBoard(history);
-    }
-    else {
-        board = createInitialBoard();
-    }
 
     return {
-        board,
+        board: createInitialBoard(),
         players: initialPlayers,
         currentPlayer: initialPlayers[0],
         mustJumpPiece: null,
