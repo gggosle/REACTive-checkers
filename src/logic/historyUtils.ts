@@ -8,21 +8,31 @@ function toAlgebraic(row: number, col: number): string {
     return `${letter}${rank}`;
 }
 
-function createMoveNotation(from: Position, to: Move, currentHistoryLength: number): string {
-    const turnNumber = Math.floor(currentHistoryLength / 2) + 1;
+export function createMoveNotation(moveEntry: MoveEntry): string {
+    const turnNumber = moveEntry.id;
     const prefix = `${turnNumber}. `;
-    const fromAlg = toAlgebraic(from.row, from.col);
-    const toAlg = toAlgebraic(to.row, to.col);
+    const fromAlg = toAlgebraic(moveEntry.from.row, moveEntry.from.col);
+    const toAlg = toAlgebraic(moveEntry.to.row, moveEntry.to.col);
 
-    const separator = to.type === 'jump' ? 'x' : '-';
+    const separator = moveEntry.isJump ? 'x' : '-';
 
     return `${prefix}${fromAlg}${separator}${toAlg}`;
 }
 
-export function generateMoveEntry(from: Position, to: Move, currentHistoryLength: number): MoveEntry {
+export function generateMoveEntry(
+    playerId: number,
+    from: Position,
+    to: Move,
+    currentHistoryLength: number,
+    isJump: boolean,
+    promotedToKing: boolean
+): MoveEntry {
     return {
-        notation: createMoveNotation(from, to, currentHistoryLength),
+        id: `move-${currentHistoryLength}-${Date.now()}`,
+        playerId,
         from,
-        to,
-    }
+        to: { row: to.row, col: to.col },
+        isJump,
+        promotedToKing
+    };
 }

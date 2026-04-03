@@ -1,6 +1,7 @@
-import type {Checker, CheckersState, Move} from '../../types/game.ts';
+import type {Checker, GameState, Move, Player} from '../../types/game.ts';
 import {applyMove, getPiece} from '../../logic/gameRules';
 import {selectValidMoves, selectWinner} from "../../selectors/gameSelectors.ts";
+import {reconstructBoard} from "../../logic/boardUtils.ts";
 
 
 export type CheckersAction =
@@ -8,9 +9,9 @@ export type CheckersAction =
     | { type: 'CLICK_CELL'; payload: { row: number; col: number } }
     | { type: 'UNDO' }
     | { type: 'TIMEOUT' }
-    | { type: 'RESTART'; payload: CheckersState };
+    | { type: 'RESTART'; payload: GameState };
 
-export const gameReducer = (state: CheckersState, action: CheckersAction): CheckersState => {
+export const gameReducer = (state: GameState, action: CheckersAction): GameState => {
     switch (action.type) {
         case 'CLICK_PIECE': {
             const { row, col } = action.payload;
@@ -62,17 +63,30 @@ export const gameReducer = (state: CheckersState, action: CheckersAction): Check
             return {
                 ...state,
                 ...nextGameState,
-                previousState: state,
                 selectedPiece: nextSelectedPiece,
             };
         }
 
         case 'UNDO': {
-            if (!state.previousState) return state;
+            let newHistory = [...state.history];
+            let poppedMove = newHistory.pop();
+
+            if (!poppedMove) return state;
+
+            while (newHistory.length > 0 && newHistory[newHistory.length - 1].playerId === poppedMove.playerId) {
+                newHistory.pop();
+            }
+            const restoredBoard = reconstructBoard(newHistory);
+
+            const restoredPlayer = state.players.find((p: Player) => p.id === poppedMove.playerId) || state.players[0];
 
             return {
-                ...state.previousState,
-                previousState: null
+                ...state,
+                board: restoredBoard,
+                history: newHistory,
+                currentPlayer: restoredPlayer,
+                mustJumpPiece: null,
+                selectedPiece: null
             };
         }
 

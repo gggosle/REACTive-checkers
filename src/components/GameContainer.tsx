@@ -28,7 +28,7 @@ export const GameContainer: React.FC = () => {
         canUndo,
         handleTimeout,
         handleRestart,
-    } = useCheckers(savedSession?.game);
+    } = useCheckers(savedSession?.history);
 
     return (
         <div className="game-container">

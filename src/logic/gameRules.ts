@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from '../constants.js';
-import type { GameState, Move, Position, Checker, Board } from '../types/game';
+import type {GameState, Move, Position, Checker, Board} from '../types/game';
 import {generateMoveEntry} from "./historyUtils.ts";
 
 export function isBlackSquare(row: number, col: number): boolean {
@@ -156,24 +156,25 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
 
     const newBoard = state.board.map(row => [...row]);
     const newHistory = [...state.history];
+    const isJump = toMove.type === 'jump';
+    const isPromoted = checkPromotion(piece, toMove.row);
 
     const movedPiece = { ...piece, row: toMove.row, col: toMove.col };
     newBoard[from.row][from.col] = null;
     newBoard[toMove.row][toMove.col] = movedPiece;
 
-    newHistory.push(generateMoveEntry(from, toMove, newHistory.length));
+    newHistory.push(generateMoveEntry(state.currentPlayer.id, from, toMove, newHistory.length,
+        isJump, isPromoted));
 
-    if (toMove.type === 'jump' && toMove.captured) {
+    if (isJump && toMove.captured) {
         newBoard[toMove.captured.row][toMove.captured.col] = null;
     }
 
-    let promoted = false;
-    if (checkPromotion(piece, toMove.row)) {
+    if (isPromoted) {
         movedPiece.isKing = true;
-        promoted = true;
     }
 
-    if (toMove.type === 'jump' && !promoted) {
+    if (isJump && !isPromoted) {
         if (hasJumpAvailable(newBoard, toMove.row, toMove.col)) {
             return {
                 ...state,

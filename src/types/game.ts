@@ -40,9 +40,12 @@ export interface Move extends Position {
 }
 
 export interface MoveEntry {
-    notation: string;
+    id: string;
+    playerId: number;
     from: Position;
     to: Position;
+    isJump: boolean;
+    promotedToKing: boolean;
 }
 
 export interface PlayerTimes {
@@ -65,12 +68,8 @@ export interface GameState {
     mustJumpPiece: Position | null;
     history: HistoryState;
     gameId: number;
-}
-
-
-export interface CheckersState extends GameState {
     selectedPiece: SelectedChecker | null;
-    previousState: Omit<CheckersState, 'previousState'> | null;
     isTimeOut: boolean;
 }
+
 
