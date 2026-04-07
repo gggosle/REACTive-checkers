@@ -1,8 +1,6 @@
+import type {Color} from "../constants.ts";
 
-export const Color = Object.freeze({
-    WHITE: 'white',
-    BLACK: 'black'
-});
+export type CheckerColor = typeof Color[keyof typeof Color];
 
 export interface Position {
     row: number;
@@ -12,13 +10,13 @@ export interface Position {
 export type Player = {
     id: number;
     name: string;
-    color: string;
+    color: CheckerColor;
     moveDir: number;
 };
 
 export interface Checker {
     id: string;
-    color: string;
+    color: CheckerColor;
     row: number;
     col: number;
     direction: number;

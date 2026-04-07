@@ -1,5 +1,5 @@
-import {GAME_RULES} from '../constants.js';
-import {Color, type Player} from "../types/game.ts";
+import {Color, GAME_RULES} from '../constants.js';
+import {type Player} from "../types/game.ts";
 
 export function generatePlayers() : Player[] {
     const player1: Player = {

@@ -34,3 +34,8 @@ export const CSS_HISTORY = {
     SELECTED_CLASS: 'selected',
     HIGHLIGHT_CLASS: 'history-highlight',
 };
+
+export const Color = {
+    WHITE: 'white',
+    BLACK: 'black'
+} as const;
