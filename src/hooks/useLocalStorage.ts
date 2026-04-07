@@ -35,7 +35,7 @@ export const useTimerEmergencySync = (timerRef: React.MutableRefObject<TimerStat
 };
 
 export const useLocalStorage = () => {
-    const saveGame = (state: GameState) => {
+    const saveGame = useCallback((state: GameState) => {
         try {
             const stateToSave: SavedGameState = {
                 gameId: state.gameId,
@@ -47,7 +47,7 @@ export const useLocalStorage = () => {
         } catch (e) {
             console.error('Failed to save game state to local storage', e);
         }
-    };
+    }, []);
 
     const saveTimerState = useCallback((state: TimerState) => {
         localStorage.setItem(TIMER_KEY, JSON.stringify(state));
