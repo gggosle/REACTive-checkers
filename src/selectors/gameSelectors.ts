@@ -1,4 +1,4 @@
-import type { CheckersState, Player, Move } from '../types/game';
+import type { GameState, Player, Move } from '../types/game';
 import {
     getValidMoves,
     hasAnyValidMoves,
@@ -9,11 +9,11 @@ import {GAME_CONFIG, GAME_RULES} from "../constants.ts";
 
 const CHECKERS_NUMBER = calculateInitialPieceCount(GAME_CONFIG.BOARD_SIZE, GAME_RULES.PIECE_ROWS_COUNT);
 
-export const selectHasJumpsAvailable = (state: CheckersState): boolean => {
+export const selectHasJumpsAvailable = (state: GameState): boolean => {
     return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
 };
 
-export const selectValidMoves = (state: CheckersState): Move[] => {
+export const selectValidMoves = (state: GameState): Move[] => {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = selectHasJumpsAvailable(state);
 
@@ -27,7 +27,7 @@ export const selectValidMoves = (state: CheckersState): Move[] => {
     );
 };
 
-export const selectWinner = (state: CheckersState): Player | null => {
+export const selectWinner = (state: GameState): Player | null => {
     if (state.isTimeOut) {
         return state.players.find(p => p.id !== state.currentPlayer.id) || null; //TODO: a separate helper fn findRival
     }
@@ -47,7 +47,7 @@ export const selectWinner = (state: CheckersState): Player | null => {
     return null;
 };
 
-export const selectCapturedCount = (state: CheckersState): Record<string, number> => {
+export const selectCapturedCount = (state: GameState): Record<string, number> => {
     let p0PiecesOnBoard = 0;
     let p1PiecesOnBoard = 0;
 

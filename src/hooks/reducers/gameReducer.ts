@@ -67,8 +67,8 @@ export const gameReducer = (state: GameState, action: CheckersAction): GameState
         }
 
         case 'UNDO': {
-            let newHistory = [...state.history];
-            let poppedMove = newHistory.pop();
+            const newHistory = [...state.history];
+            const poppedMove = newHistory.pop();
 
             if (!poppedMove) return state;
 
