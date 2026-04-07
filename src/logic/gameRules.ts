@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from '../constants.js';
-import type {GameState, Move, Position, Checker, Board} from '../types/game';
+import type {GameState, Move, Position, Checker, Board, Player} from '../types/game';
 import {generateMoveEntry} from "./historyUtils.ts";
 
 export function isBlackSquare(row: number, col: number): boolean {
@@ -194,4 +194,42 @@ export function applyMove(state: GameState, from: Position, toMove: Move): GameS
         mustJumpPiece: null,
         currentPlayer: nextPlayer
     };
+}
+
+export function calculateValidMoves (state: GameState): Move[] {
+    if (!state.selectedPiece) return [];
+    const jumpsAvailable = calculateJumpsAvailable(state);
+
+    return getValidMoves(
+        state.board,
+        state.currentPlayer.moveDir,
+        state.mustJumpPiece,
+        jumpsAvailable,
+        state.selectedPiece.row,
+        state.selectedPiece.col
+    );
+}
+
+export function calculateWinner (state: GameState): Player | null  {
+    if (state.isTimeOut) {
+        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
+    }
+    const jumpsAvailable = calculateJumpsAvailable(state);
+
+    const canCurrentPlayerMove = hasAnyValidMoves(
+        state.board,
+        state.currentPlayer.moveDir,
+        state.mustJumpPiece,
+        jumpsAvailable
+    );
+
+    if (!canCurrentPlayerMove) {
+        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
+    }
+
+    return null;
+}
+
+export function calculateJumpsAvailable (state: GameState): boolean  {
+    return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
 }

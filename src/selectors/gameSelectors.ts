@@ -1,50 +1,17 @@
 import type { GameState, Player, Move } from '../types/game';
-import {
-    getValidMoves,
-    hasAnyValidMoves,
-    anyPlayerJumpsAvailable
+import {calculateValidMoves, calculateWinner
 } from '../logic/gameRules';
 import {calculateInitialPieceCount} from "../logic/boardUtils.ts";
 import {GAME_CONFIG, GAME_RULES} from "../constants.ts";
 
 const CHECKERS_NUMBER = calculateInitialPieceCount(GAME_CONFIG.BOARD_SIZE, GAME_RULES.PIECE_ROWS_COUNT);
 
-export const selectHasJumpsAvailable = (state: GameState): boolean => {
-    return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
-};
-
 export const selectValidMoves = (state: GameState): Move[] => {
-    if (!state.selectedPiece) return [];
-    const jumpsAvailable = selectHasJumpsAvailable(state);
-
-    return getValidMoves(
-        state.board,
-        state.currentPlayer.moveDir,
-        state.mustJumpPiece,
-        jumpsAvailable,
-        state.selectedPiece.row,
-        state.selectedPiece.col
-    );
+    return calculateValidMoves(state);
 };
 
 export const selectWinner = (state: GameState): Player | null => {
-    if (state.isTimeOut) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null; //TODO: a separate helper fn findRival
-    }
-    const jumpsAvailable = selectHasJumpsAvailable(state);
-
-    const canCurrentPlayerMove = hasAnyValidMoves(
-        state.board,
-        state.currentPlayer.moveDir,
-        state.mustJumpPiece,
-        jumpsAvailable
-    );
-
-    if (!canCurrentPlayerMove) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
-    }
-
-    return null;
+    return calculateWinner(state)
 };
 
 export const selectCapturedCount = (state: GameState): Record<string, number> => {

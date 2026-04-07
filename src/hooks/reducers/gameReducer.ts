@@ -1,6 +1,5 @@
 import type {Checker, GameState, Move, Player} from '../../types/game.ts';
-import {applyMove, getPiece} from '../../logic/gameRules';
-import {selectValidMoves, selectWinner} from "../../selectors/gameSelectors.ts";
+import {applyMove, calculateValidMoves, calculateWinner, getPiece} from '../../logic/gameRules';
 import {reconstructBoard} from "../../logic/boardUtils.ts";
 
 
@@ -16,7 +15,7 @@ export const gameReducer = (state: GameState, action: CheckersAction): GameState
         case 'CLICK_PIECE': {
             const { row, col } = action.payload;
 
-            if (selectWinner(state)) return state;
+            if (calculateWinner(state)) return state;
 
             const piece : Checker | null = getPiece(state.board, row, col);
             if (!piece || piece.direction !== state.currentPlayer.moveDir) return state;
@@ -28,7 +27,7 @@ export const gameReducer = (state: GameState, action: CheckersAction): GameState
                 };
             }
 
-            const moves = selectValidMoves({
+            const moves = calculateValidMoves({
                 ...state,
                 selectedPiece: { row, col },
             });
@@ -45,9 +44,9 @@ export const gameReducer = (state: GameState, action: CheckersAction): GameState
         case 'CLICK_CELL': {
             const { row, col } = action.payload;
 
-            if (!state.selectedPiece || selectWinner(state)) return state;
+            if (!state.selectedPiece || calculateWinner(state)) return state;
 
-            const move = selectValidMoves(state).find((m: Move) => m.row === row && m.col === col);
+            const move = calculateValidMoves(state).find((m: Move) => m.row === row && m.col === col);
 
             if (!move) return state;
 
