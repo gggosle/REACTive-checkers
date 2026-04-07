@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
-import { CSS_BOARD } from '../constants.ts';
+import {CSS_BOARD, GAME_CONFIG} from '../constants.ts';
 import { Color, type Checker as CheckerType } from "../types/game.ts";
 
 interface CheckerProps {
@@ -17,7 +17,7 @@ export const Checker: React.FC<CheckerProps> = memo(({ piece, isSelected, onClic
         if (prevPos.current.row !== piece.row || prevPos.current.col !== piece.col) {
             setIsAnimating(true);
             prevPos.current = { row: piece.row, col: piece.col };
-            const timer = setTimeout(() => setIsAnimating(false), 300);
+            const timer = setTimeout(() => setIsAnimating(false), GAME_CONFIG.ANIMATION_DURATION);
 
             return () => clearTimeout(timer);
         }
