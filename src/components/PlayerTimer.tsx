@@ -5,17 +5,17 @@ export interface PlayerTimerProps {
     isActive: boolean;
 }
 
+
+const formatTime = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 export const PlayerTimer: React.FC<PlayerTimerProps> = React.memo(({
                                                                        seconds,
                                                                        isActive
                                                                    }) => {
-
-    const formatTime = (totalSeconds: number) => {
-        const mins = Math.floor(totalSeconds / 60);
-        const secs = totalSeconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
     return (
         <span
             style={{
