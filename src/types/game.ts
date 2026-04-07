@@ -4,11 +4,6 @@ export const Color = Object.freeze({
     BLACK: 'black'
 });
 
-export const MoveType = Object.freeze({
-    MOVE: 'move',
-    JUMP: 'jump'
-});
-
 export interface Position {
     row: number;
     col: number;
