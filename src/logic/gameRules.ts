@@ -1,6 +1,5 @@
 import { GAME_CONFIG } from '../constants.js';
-import type {GameState, Move, Position, Checker, Board, Player} from '../types/game';
-import {generateMoveEntry} from "./historyUtils.ts";
+import type {GameState, Move, Position, Checker, Board} from '../types/game';
 
 export function isBlackSquare(row: number, col: number): boolean {
     return (row + col) % 2 === 1;
@@ -144,58 +143,6 @@ export function hasAnyValidMoves(
     return false;
 }
 
-export function checkPromotion(piece: Checker, targetRow: number): boolean {
-    if (piece.isKing) return false;
-    return (piece.direction === 1 && targetRow === GAME_CONFIG.BOARD_SIZE - 1) ||
-        (piece.direction === -1 && targetRow === 0);
-}
-
-export function applyMove(state: GameState, from: Position, toMove: Move): GameState {
-    const piece = getPiece(state.board, from.row, from.col);
-    if (!piece) return state;
-
-    const newBoard = state.board.map(row => [...row]);
-    const newHistory = [...state.history];
-    const isJump = toMove.type === 'jump';
-    const isPromoted = checkPromotion(piece, toMove.row);
-
-    const movedPiece = { ...piece, row: toMove.row, col: toMove.col };
-    newBoard[from.row][from.col] = null;
-    newBoard[toMove.row][toMove.col] = movedPiece;
-
-    newHistory.push(generateMoveEntry(state.currentPlayer.id, from, toMove,
-        isJump, isPromoted));
-
-    if (isJump && toMove.captured) {
-        newBoard[toMove.captured.row][toMove.captured.col] = null;
-    }
-
-    if (isPromoted) {
-        movedPiece.isKing = true;
-    }
-
-    if (isJump && !isPromoted) {
-        if (hasJumpAvailable(newBoard, toMove.row, toMove.col)) {
-            return {
-                ...state,
-                board: newBoard,
-                history: newHistory,
-                mustJumpPiece: { row: toMove.row, col: toMove.col }
-            };
-        }
-    }
-
-    const nextPlayer = state.players.find(p => p.id !== state.currentPlayer.id) || state.players[0];
-
-    return {
-        ...state,
-        board: newBoard,
-        history: newHistory,
-        mustJumpPiece: null,
-        currentPlayer: nextPlayer
-    };
-}
-
 export function calculateValidMoves (state: GameState): Move[] {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = calculateJumpsAvailable(state);
@@ -208,26 +155,6 @@ export function calculateValidMoves (state: GameState): Move[] {
         state.selectedPiece.row,
         state.selectedPiece.col
     );
-}
-
-export function calculateWinner (state: GameState): Player | null  {
-    if (state.isTimeOut) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
-    }
-    const jumpsAvailable = calculateJumpsAvailable(state);
-
-    const canCurrentPlayerMove = hasAnyValidMoves(
-        state.board,
-        state.currentPlayer.moveDir,
-        state.mustJumpPiece,
-        jumpsAvailable
-    );
-
-    if (!canCurrentPlayerMove) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
-    }
-
-    return null;
 }
 
 export function calculateJumpsAvailable (state: GameState): boolean  {

@@ -1,45 +1,60 @@
-import {useCallback, useEffect, useMemo, useReducer} from 'react';
-import {gameReducer} from './reducers/gameReducer';
-import {createInitialGameState} from '../logic/gameInitState.ts';
-import {useLocalStorage} from './useLocalStorage.ts';
-import type {GameState, SavedGameState} from "../types/game.ts";
-import {selectCapturedCount, selectValidMoves, selectWinner} from "../selectors/gameSelectors.ts";
-import {reconstructBoard} from "../logic/boardUtils.ts";
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useLocalStorage, GAME_KEY} from './useLocalStorage.ts';
+import type {GameState} from "../types/game.ts";
+import {selectCapturedCount, selectValidMoves} from "../selectors/gameSelectors.ts";
+import {api} from "../services/api.ts";
 
-export const useCheckers = (savedState: SavedGameState | undefined) => {
+export const useCheckers = () => {
+    const [gameState, setGameState] = useState<GameState | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { saveGame } = useLocalStorage();
 
-    const initGame = (): GameState => {
-        if (savedState && savedState.history && savedState.players && savedState.players.length > 0) {
-            const restoredBoard = reconstructBoard(savedState.history);
-            let activePlayer = savedState.players[0];
-
-            if (savedState.history.length > 0) {
-                const lastMove = savedState.history[savedState.history.length - 1];
-
-                if (savedState.mustJumpPiece) {
-                    activePlayer = savedState.players.find(p => p.id === lastMove.playerId) || savedState.players[0];
-                } else {
-                    activePlayer = savedState.players.find(p => p.id !== lastMove.playerId) || savedState.players[0];
+    const initGame = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const savedGameStr = localStorage.getItem(GAME_KEY);
+            let gameId: string | null = null;
+            if (savedGameStr) {
+                try {
+                    const savedGame = JSON.parse(savedGameStr);
+                    gameId = savedGame.gameId;
+                } catch (e) {
+                    console.error("Failed to parse saved game state", e);
                 }
             }
 
-            return {
-                board: restoredBoard,
-                players: savedState.players,
-                currentPlayer: activePlayer,
-                history: savedState.history,
-                mustJumpPiece: savedState.mustJumpPiece || null,
-                gameId: savedState.gameId || Date.now(),
+            let newState: Partial<GameState> | null = null;
+            if (gameId) {
+                try {
+                    newState = await api.fetchGame(gameId);
+                } catch (e) {
+                    console.error("Failed to fetch game, creating new one", e);
+                }
+            }
+
+            if (!newState) {
+                newState = await api.initializeGame();
+            }
+
+            const fullState: GameState = {
+                ...newState,
+                history: [],
                 selectedPiece: null,
                 isTimeOut: false,
             } as GameState;
+
+            setGameState(fullState);
+        } catch (error) {
+            console.error("Initialization error", error);
+        } finally {
+            setIsLoading(false);
         }
+    }, []);
 
-        return createInitialGameState();
-    };
+    useEffect(() => {
+        initGame();
+    }, [initGame]);
 
-    const [gameState, dispatchGame] = useReducer(gameReducer, null, initGame);
     useEffect(() => {
         if (gameState) {
             saveGame(gameState);
@@ -47,40 +62,94 @@ export const useCheckers = (savedState: SavedGameState | undefined) => {
     }, [gameState, saveGame]);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
-        dispatchGame({ type: 'CLICK_PIECE', payload: { row, col } });
-    }, []);
+        if (!gameState || gameState.winner || isLoading) return;
+        const piece = gameState.board[row][col];
+        if (piece && piece.color === gameState.currentPlayer.color) {
+            setGameState(prev => prev ? { ...prev, selectedPiece: { row, col } } : null);
+        }
+    }, [gameState, isLoading]);
 
-    const handleCellClick = useCallback((row: number, col: number) => {
-        dispatchGame({ type: 'CLICK_CELL', payload: { row, col } });
-    }, []);
+    const handleCellClick = useCallback(async (row: number, col: number) => {
+        if (!gameState || !gameState.selectedPiece || gameState.winner || isLoading) return;
 
-    const handleUndo = useCallback(() => {
-        dispatchGame({ type: 'UNDO' });
-    }, []);
+        setIsLoading(true);
+        try {
+            const newState = await api.attemptMove(gameState.gameId, gameState.selectedPiece, { row, col });
+            setGameState(prev => ({
+                ...prev!,
+                ...newState,
+                selectedPiece: null,
+            }));
+        } catch (error) {
+            console.error("Move error", error);
+            setGameState(prev => prev ? { ...prev, selectedPiece: null } : null);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [gameState, isLoading]);
 
-    const canUndo = gameState.history.length !== 0 && selectWinner(gameState) === null;
+    const handleUndo = useCallback(async () => {
+        if (!gameState || gameState.winner || isLoading) return;
+
+        setIsLoading(true);
+        try {
+            const newState = await api.undoMove(gameState.gameId);
+            setGameState(prev => ({
+                ...prev!,
+                ...newState,
+                selectedPiece: null,
+            }));
+        } catch (error) {
+            console.error("Undo error", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [gameState, isLoading]);
 
     const handleTimeout = useCallback(() => {
-        dispatchGame({ type: 'TIMEOUT' });
+        setGameState(prev => prev ? { ...prev, isTimeOut: true } : null);
     }, []);
 
-    const handleRestart = useCallback(() => {
-        dispatchGame({ type: 'RESTART', payload: createInitialGameState() });
+    const handleRestart = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const newState = await api.initializeGame();
+            setGameState({
+                ...newState,
+                history: [],
+                selectedPiece: null,
+                isTimeOut: false,
+            } as GameState);
+        } catch (error) {
+            console.error("Restart error", error);
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
-    const validMoves = useMemo(() => selectValidMoves(gameState), [gameState]);
-    const winner = useMemo(() => selectWinner(gameState), [gameState]);
-    const capturedCount = useMemo(() => selectCapturedCount(gameState), [gameState]);
+    const validMoves = useMemo(() => (gameState ? selectValidMoves(gameState) : []), [gameState]);
+    const capturedCount = useMemo(() => (gameState ? selectCapturedCount(gameState) : {}), [gameState]);
+    
+    const winner = useMemo(() => {
+        if (!gameState || !gameState.winner) return null;
+        return gameState.players.find(p => p.id === gameState.winner) || null;
+    }, [gameState]);
 
     return {
         ...gameState,
+        board: gameState?.board || [],
+        players: gameState?.players || [],
+        currentPlayer: gameState?.currentPlayer || { id: 0, name: '', color: 'white' as any, moveDir: 0 },
+        history: gameState?.history || [],
+        gameId: gameState?.gameId || '',
         validMoves,
         winner,
         capturedCount,
+        isLoading,
         handlePieceClick,
         handleCellClick,
         handleUndo,
-        canUndo,
+        canUndo: !winner && !isLoading,
         handleTimeout,
         handleRestart
     };

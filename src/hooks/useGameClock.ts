@@ -6,7 +6,7 @@ import { useLocalStorage, useTimerEmergencySync } from "./useLocalStorage.ts";
 
 export const useGameClock = (
     activePlayerId: number | undefined,
-    gameId: number,
+    gameId: string,
     onTimeOut: () => void,
     timer: TimerState | undefined
 ) => {

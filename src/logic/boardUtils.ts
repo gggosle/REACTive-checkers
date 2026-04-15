@@ -1,5 +1,5 @@
 import { GAME_CONFIG, GAME_RULES } from '../constants.js';
-import type {Board, Checker, MoveEntry} from '../types/game';
+import type {Board, Checker} from '../types/game';
 import {isBlackSquare} from "./gameRules.ts";
 
 export function createInitialBoard(): Board {
@@ -46,28 +46,3 @@ export function createInitialBoard(): Board {
 export const calculateInitialPieceCount = (boardSize: number, rowsCount: number): number => {
     return Math.floor((boardSize * rowsCount) / 2);
 };
-
-export function reconstructBoard(history: MoveEntry[]): Board {
-    const currentBoard = createInitialBoard();
-
-    for (const entry of history) {
-        const piece = currentBoard[entry.from.row][entry.from.col];
-        if (!piece) continue;
-
-        const movedPiece = { ...piece, row: entry.to.row, col: entry.to.col };
-        currentBoard[entry.from.row][entry.from.col] = null;
-        currentBoard[entry.to.row][entry.to.col] = movedPiece;
-
-        if (entry.isJump) {
-            const capturedRow = (entry.from.row + entry.to.row) / 2;
-            const capturedCol = (entry.from.col + entry.to.col) / 2;
-            currentBoard[capturedRow][capturedCol] = null;
-        }
-
-        if (entry.promotedToKing) {
-            movedPiece.isKing = true;
-        }
-    }
-
-    return currentBoard;
-}

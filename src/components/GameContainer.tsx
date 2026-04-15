@@ -3,7 +3,6 @@ import { useCheckers } from '../hooks/useCheckers.ts';
 import { Board } from './Board.tsx';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
-import {History} from "./History.tsx";
 import {loadGameSession} from "../hooks/useLocalStorage.ts";
 import {UndoButton} from "./UndoButton.tsx";
 import {TimerController} from "./TimerController.tsx";
@@ -18,17 +17,17 @@ export const GameContainer: React.FC = () => {
         capturedCount,
         selectedPiece,
         validMoves,
-        history,
         winner,
         isTimeOut,
         gameId,
+        isLoading,
         handlePieceClick,
         handleCellClick,
         handleUndo,
         canUndo,
         handleTimeout,
         handleRestart,
-    } = useCheckers(savedSession?.game);
+    } = useCheckers();
 
     return (
         <div className="game-container">
@@ -53,7 +52,7 @@ export const GameContainer: React.FC = () => {
             />
 
             <div className="main-content">
-                <main>
+                <main style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}>
                     <Board
                         boardState={board}
                         selectedPiece={selectedPiece}
@@ -62,14 +61,9 @@ export const GameContainer: React.FC = () => {
                         onCellClick={handleCellClick}
                     />
                 </main>
-
-                <History
-                    history = {history}
-                />
-
             </div>
             <div className="footer">
-                <button className="btn btn-primary" onClick={handleRestart}>
+                <button className="btn btn-primary" onClick={handleRestart} disabled={isLoading}>
                     Restart Game
                 </button>
 

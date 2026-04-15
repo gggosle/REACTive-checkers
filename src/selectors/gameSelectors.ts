@@ -1,6 +1,5 @@
-import type { GameState, Player, Move } from '../types/game';
-import {calculateValidMoves, calculateWinner
-} from '../logic/gameRules';
+import type { GameState, Move } from '../types/game';
+import {calculateValidMoves} from '../logic/gameRules';
 import {calculateInitialPieceCount} from "../logic/boardUtils.ts";
 import {GAME_CONFIG, GAME_RULES} from "../constants.ts";
 
@@ -8,10 +7,6 @@ const CHECKERS_NUMBER = calculateInitialPieceCount(GAME_CONFIG.BOARD_SIZE, GAME_
 
 export const selectValidMoves = (state: GameState): Move[] => {
     return calculateValidMoves(state);
-};
-
-export const selectWinner = (state: GameState): Player | null => {
-    return calculateWinner(state)
 };
 
 export const selectCapturedCount = (state: GameState): Record<string, number> => {
