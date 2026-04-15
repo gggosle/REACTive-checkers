@@ -52,7 +52,7 @@ export const GameContainer: React.FC = () => {
             />
 
             <div className="main-content">
-                <main style={{ opacity: isLoading ? 0.6 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}>
+                <main style={{ pointerEvents: isLoading ? 'none' : 'auto' }}>
                     <Board
                         boardState={board}
                         selectedPiece={selectedPiece}
