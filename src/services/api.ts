@@ -1,4 +1,4 @@
-import type {GameState, Position} from '../types/game';
+import type {Checker, CheckerColor, GameState, Position} from '../types/game';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -11,7 +11,7 @@ interface BackendPlayer {
 
 interface BackendGameState {
     id: string;
-    board: any[][];
+    board: (Checker | null)[][];
     current_player: BackendPlayer;
     players: BackendPlayer[];
     must_jump_piece: { row: number, col: number } | null;
@@ -25,13 +25,13 @@ const mapBackendToFrontend = (data: BackendGameState): Partial<GameState> => {
         currentPlayer: {
             id: data.current_player.id,
             name: data.current_player.name,
-            color: data.current_player.color as any,
+            color: data.current_player.color as CheckerColor,
             moveDir: data.current_player.move_dir,
         },
         players: data.players.map(p => ({
             id: p.id,
             name: p.name,
-            color: p.color as any,
+            color: p.color as CheckerColor,
             moveDir: p.move_dir,
         })),
         mustJumpPiece: data.must_jump_piece ? { row: data.must_jump_piece.row, col: data.must_jump_piece.col } : null,
