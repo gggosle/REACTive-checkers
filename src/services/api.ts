@@ -66,8 +66,8 @@ export const api = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                from_pos: { r: fromPos.row, c: fromPos.col },
-                to_pos: { r: toPos.row, c: toPos.col },
+                from_pos: { row: fromPos.row, col: fromPos.col },
+                to_pos: { row: toPos.row, col: toPos.col },
             }),
         });
         if (!response.ok) {
