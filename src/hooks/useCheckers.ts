@@ -149,6 +149,7 @@ export const useCheckers = () => {
         currentPlayerId: gameState?.currentPlayerId || 0,
         history: gameState?.history || [],
         gameId: gameState?.id || '',
+        selectedPiece: gameState?.selectedPiece || null,
         validMoves,
         winnerId,
         capturedCount,
