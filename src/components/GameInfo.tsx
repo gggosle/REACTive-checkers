@@ -5,15 +5,16 @@ import {TurnIndicator} from "./TurnIndicator.tsx";
 
 
 interface GameInfoProps {
-    currentPlayer: Player;
+    currentPlayerId: number;
     players: Player[];
     capturedCount: Record<number, number>;
 }
 
-export const GameInfo: React.FC<GameInfoProps> = memo(({ currentPlayer,
+export const GameInfo: React.FC<GameInfoProps> = memo(({ currentPlayerId,
                                                      players,
                                                       capturedCount,
                                                      }) => {
+    const currentPlayer = players.find(player => player.id === currentPlayerId);
     return (
         <header className="header">
             <h1 className="title">CHECKERS</h1>

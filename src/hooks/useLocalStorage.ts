@@ -38,7 +38,7 @@ export const useLocalStorage = () => {
     const saveGame = useCallback((state: GameState) => {
         try {
             const stateToSave: SavedGameState = {
-                gameId: state.gameId,
+                gameId: state.id,
                 history: state.history,
                 players: state.players,
                 mustJumpPiece: state.mustJumpPiece

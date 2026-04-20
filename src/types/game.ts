@@ -57,13 +57,13 @@ export interface TimerState {
 export interface GameState {
     board: Board;
     players: Player[];
-    currentPlayer: Player;
+    currentPlayerId: number;
     mustJumpPiece: Position | null;
     history: HistoryState;
-    gameId: string;
+    id: string;
     selectedPiece: SelectedChecker | null;
     isTimeOut: boolean;
-    winner: number | null;
+    winnerId: number | null;
 }
 
 export interface SavedGameState {

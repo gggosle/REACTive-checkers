@@ -2,7 +2,8 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useLocalStorage, GAME_KEY} from './useLocalStorage.ts';
 import type {GameState} from "../types/game.ts";
 import {selectCapturedCount, selectValidMoves} from "../selectors/gameSelectors.ts";
-import {api} from "../services/api.ts";
+import {ApiService} from "../api"
+import type {MovePayload} from "../api";
 
 export const useCheckers = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -26,14 +27,14 @@ export const useCheckers = () => {
             let newState: Partial<GameState> | null = null;
             if (gameId) {
                 try {
-                    newState = await api.fetchGame(gameId);
+                    newState = await ApiService.apiGamesRetrieve(gameId);
                 } catch (e) {
                     console.error("Failed to fetch game, creating new one", e);
                 }
             }
 
             if (!newState) {
-                newState = await api.initializeGame();
+                newState = await ApiService.apiGamesCreate();
             }
 
             const fullState: GameState = {
@@ -62,19 +63,25 @@ export const useCheckers = () => {
     }, [gameState, saveGame]);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
-        if (!gameState || gameState.winner || isLoading) return;
+        if (!gameState || gameState.winnerId || isLoading) return;
         const piece = gameState.board[row][col];
-        if (piece && piece.color === gameState.currentPlayer.color) {
+        const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+
+        if (piece && piece.color === currentPlayer?.color) {
             setGameState(prev => prev ? { ...prev, selectedPiece: { row, col } } : null);
         }
     }, [gameState, isLoading]);
 
     const handleCellClick = useCallback(async (row: number, col: number) => {
-        if (!gameState || !gameState.selectedPiece || gameState.winner || isLoading) return;
+        if (!gameState || !gameState.selectedPiece || gameState.winnerId || isLoading) return;
 
         setIsLoading(true);
         try {
-            const newState = await api.attemptMove(gameState.gameId, gameState.selectedPiece, { row, col });
+            const movePayload: MovePayload = {
+                fromPos: gameState.selectedPiece,
+                toPos: { row, col },
+            }
+            const newState = await ApiService.apiGamesMoveCreate(gameState.id, movePayload);
             setGameState(prev => ({
                 ...prev!,
                 ...newState,
@@ -89,11 +96,11 @@ export const useCheckers = () => {
     }, [gameState, isLoading]);
 
     const handleUndo = useCallback(async () => {
-        if (!gameState || gameState.winner || isLoading) return;
+        if (!gameState || gameState.winnerId || isLoading) return;
 
         setIsLoading(true);
         try {
-            const newState = await api.undoMove(gameState.gameId);
+            const newState = await ApiService.apiGamesUndoCreate(gameState.id);
             setGameState(prev => ({
                 ...prev!,
                 ...newState,
@@ -113,7 +120,7 @@ export const useCheckers = () => {
     const handleRestart = useCallback(async () => {
         setIsLoading(true);
         try {
-            const newState = await api.initializeGame();
+            const newState = await ApiService.apiGamesCreate();
             setGameState({
                 ...newState,
                 history: [],
@@ -130,26 +137,26 @@ export const useCheckers = () => {
     const validMoves = useMemo(() => (gameState ? selectValidMoves(gameState) : []), [gameState]);
     const capturedCount = useMemo(() => (gameState ? selectCapturedCount(gameState) : {}), [gameState]);
     
-    const winner = useMemo(() => {
-        if (!gameState || !gameState.winner) return null;
-        return gameState.players.find(p => p.id === gameState.winner) || null;
+    const winnerId = useMemo(() => {
+        if (!gameState || !gameState.winnerId) return null;
+        return gameState.players.find(p => p.id === gameState.winnerId) || null;
     }, [gameState]);
 
     return {
         ...gameState,
         board: gameState?.board || [],
         players: gameState?.players || [],
-        currentPlayer: gameState?.currentPlayer || { id: 0, name: '', color: 'white' as any, moveDir: 0 },
+        currentPlayerId: gameState?.currentPlayerId || 0,
         history: gameState?.history || [],
-        gameId: gameState?.gameId || '',
+        gameId: gameState?.id || '',
         validMoves,
-        winner,
+        winnerId,
         capturedCount,
         isLoading,
         handlePieceClick,
         handleCellClick,
         handleUndo,
-        canUndo: !winner && !isLoading,
+        canUndo: !winnerId && !isLoading,
         handleTimeout,
         handleRestart
     };

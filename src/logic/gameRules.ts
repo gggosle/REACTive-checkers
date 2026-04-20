@@ -146,10 +146,10 @@ export function hasAnyValidMoves(
 export function calculateValidMoves (state: GameState): Move[] {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = calculateJumpsAvailable(state);
-
+    const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
     return getValidMoves(
         state.board,
-        state.currentPlayer.moveDir,
+        currentPlayer?.moveDir,
         state.mustJumpPiece,
         jumpsAvailable,
         state.selectedPiece.row,
@@ -158,5 +158,6 @@ export function calculateValidMoves (state: GameState): Move[] {
 }
 
 export function calculateJumpsAvailable (state: GameState): boolean  {
-    return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
+    const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
+    return anyPlayerJumpsAvailable(state.board, currentPlayer?.moveDir);
 }

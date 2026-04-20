@@ -12,12 +12,12 @@ export const GameContainer: React.FC = () => {
 
     const {
         board,
-        currentPlayer,
+        currentPlayerId,
         players,
         capturedCount,
         selectedPiece,
         validMoves,
-        winner,
+        winnerId,
         isTimeOut,
         gameId,
         isLoading,
@@ -32,19 +32,19 @@ export const GameContainer: React.FC = () => {
     return (
         <div className="game-container">
             <GameOverModal
-                winner={winner}
+                winner={winnerId}
                 onRestart={handleRestart}
             />
 
             <GameInfo
-                currentPlayer={currentPlayer}
+                currentPlayerId={currentPlayerId}
                 players={players}
                 capturedCount={capturedCount}
             />
 
             <TimerController
                 key={gameId}
-                activePlayerId={isTimeOut ? undefined : currentPlayer.id}
+                activePlayerId={isTimeOut ? undefined : currentPlayerId}
                 players={players}
                 gameId={gameId}
                 onTimeOut={handleTimeout}
