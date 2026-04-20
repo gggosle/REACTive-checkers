@@ -124,25 +124,6 @@ export function anyPlayerJumpsAvailable(board: Board, playerMoveDir: number): bo
     return false;
 }
 
-export function hasAnyValidMoves(
-    board: Board,
-    playerMoveDir: number,
-    mustJumpPiece: Position | null,
-    hasJumpsAvailable: boolean
-): boolean {
-    for (let r = 0; r < GAME_CONFIG.BOARD_SIZE; r++) {
-        for (let c = 0; c < GAME_CONFIG.BOARD_SIZE; c++) {
-            const piece = getPiece(board, r, c);
-            if (piece && piece.direction === playerMoveDir) {
-                if (getValidMoves(board, playerMoveDir, mustJumpPiece, hasJumpsAvailable, r, c).length > 0) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 export function calculateValidMoves (state: GameState): Move[] {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = calculateJumpsAvailable(state);
