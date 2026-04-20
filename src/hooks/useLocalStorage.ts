@@ -39,9 +39,6 @@ export const useLocalStorage = () => {
         try {
             const stateToSave: SavedGameState = {
                 gameId: state.id,
-                history: state.history,
-                players: state.players,
-                mustJumpPiece: state.mustJumpPiece
             };
             localStorage.setItem(GAME_KEY, JSON.stringify(stateToSave));
         } catch (e) {

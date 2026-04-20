@@ -68,9 +68,6 @@ export interface GameState {
 
 export interface SavedGameState {
     gameId: string;
-    history: HistoryState;
-    players: Player[];
-    mustJumpPiece: Position | null;
 }
 
 
