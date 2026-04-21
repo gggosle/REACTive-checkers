@@ -1,10 +1,6 @@
 import { GAME_CONFIG } from '../constants.js';
 import type {GameState, Move, Position, Checker, Board} from '../types/game';
 
-export function isBlackSquare(row: number, col: number): boolean {
-    return (row + col) % 2 === 1;
-}
-
 export function isInBounds(row: number, col: number): boolean {
     return row >= 0 && row < GAME_CONFIG.BOARD_SIZE && col >= 0 && col < GAME_CONFIG.BOARD_SIZE;
 }

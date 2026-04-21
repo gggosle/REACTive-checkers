@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from '../constants.js';
-import type {Position, Move, MoveEntry} from '../types/game';
+import type {MoveEntry} from '../types/game';
 
 function toAlgebraic(row: number, col: number): string {
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -15,21 +15,4 @@ export function createMoveNotation(moveEntry: MoveEntry): string {
     const separator = moveEntry.isJump ? 'x' : '-';
 
     return `${fromAlg}${separator}${toAlg}`;
-}
-
-export function generateMoveEntry(
-    playerId: number,
-    from: Position,
-    to: Move,
-    isJump: boolean,
-    promotedToKing: boolean
-): MoveEntry {
-    return {
-        id: Date.now(),
-        playerId,
-        from,
-        to: { row: to.row, col: to.col },
-        isJump,
-        promotedToKing
-    };
 }
