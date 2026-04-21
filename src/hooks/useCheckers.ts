@@ -1,9 +1,10 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {useLocalStorage, GAME_KEY} from './useLocalStorage.ts';
+import {useLocalStorage} from './useLocalStorage.ts';
 import type {GameState} from "../types/game.ts";
 import {selectCapturedCount, selectValidMoves} from "../selectors/gameSelectors.ts";
 import {ApiService} from "../api"
 import type {MovePayload} from "../api";
+import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
 
 export const useCheckers = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -11,49 +12,42 @@ export const useCheckers = () => {
     const { saveGame } = useLocalStorage();
 
     const initGame = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const savedGameStr = localStorage.getItem(GAME_KEY);
-            let gameId: string | null = null;
-            if (savedGameStr) {
-                try {
-                    const savedGame = JSON.parse(savedGameStr);
-                    gameId = savedGame.gameId;
-                } catch (e) {
-                    console.error("Failed to parse saved game state", e);
-                }
+        let gameId: string | null = getGameIdFromLocalStorage();
+
+        let newState: Partial<GameState> | null = null;
+        if (gameId) {
+            try {
+                newState = await ApiService.apiGamesRetrieve(gameId);
+            } catch (e) {
+                console.error("Failed to fetch game, creating new one", e);
             }
-
-            let newState: Partial<GameState> | null = null;
-            if (gameId) {
-                try {
-                    newState = await ApiService.apiGamesRetrieve(gameId);
-                } catch (e) {
-                    console.error("Failed to fetch game, creating new one", e);
-                }
-            }
-
-            if (!newState) {
-                newState = await ApiService.apiGamesCreate();
-            }
-
-            const fullState: GameState = {
-                ...newState,
-                history: [],
-                selectedPiece: null,
-                isTimeOut: false,
-            } as GameState;
-
-            setGameState(fullState);
-        } catch (error) {
-            console.error("Initialization error", error);
-        } finally {
-            setIsLoading(false);
         }
+
+        if (!newState) {
+            newState = await ApiService.apiGamesCreate();
+        }
+
+        const fullState: GameState = {
+            ...newState,
+            history: [],
+            selectedPiece: null,
+            isTimeOut: false,
+        } as GameState;
+
+        setGameState(fullState);
     }, []);
 
     useEffect(() => {
-        initGame();
+        const runInit = async () => {
+            setIsLoading(true);
+            try {
+                await initGame();
+            } catch (error) {
+                console.error("Initialization error", error);
+            } finally {
+                setIsLoading(false);
+        }};
+         void runInit();
     }, [initGame]);
 
     useEffect(() => {
