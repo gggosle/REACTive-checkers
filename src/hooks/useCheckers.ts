@@ -7,10 +7,13 @@ import type {MovePayload} from "../api";
 import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
 import {calculateValidMoves} from "../logic/gameRules.ts";
 
+let initPromise: Promise<void> | null = null;
+
 export const useCheckers = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const { saveGame } = useLocalStorage();
+
 
     const initGame = useCallback(async () => {
         const gameId: string | null = getGameIdFromLocalStorage();
@@ -40,15 +43,22 @@ export const useCheckers = () => {
 
     useEffect(() => {
         const runInit = async () => {
+            if (initPromise) {
+                await initPromise;
+                return;
+            }
+
             setIsLoading(true);
             try {
-                await initGame();
-            } catch (error) {
-                console.error("Initialization error", error);
+                initPromise = initGame();
+                await initPromise;
             } finally {
                 setIsLoading(false);
-        }};
-         void runInit();
+                initPromise = null;
+            }
+        };
+
+        void runInit();
     }, [initGame]);
 
     useEffect(() => {
