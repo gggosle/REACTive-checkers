@@ -1,10 +1,11 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useLocalStorage} from './useLocalStorage.ts';
 import type {GameState} from "../types/game.ts";
-import {selectCapturedCount, selectValidMoves} from "../selectors/gameSelectors.ts";
+import {selectCapturedCount} from "../selectors/gameSelectors.ts";
 import {ApiService} from "../api"
 import type {MovePayload} from "../api";
 import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
+import {calculateValidMoves} from "../logic/gameRules.ts";
 
 export const useCheckers = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -128,7 +129,7 @@ export const useCheckers = () => {
         }
     }, []);
 
-    const validMoves = useMemo(() => (gameState ? selectValidMoves(gameState) : []), [gameState]);
+    const validMoves = useMemo(() => (gameState ? calculateValidMoves(gameState) : []), [gameState]);
     const capturedCount = useMemo(() => (gameState ? selectCapturedCount(gameState) : {}), [gameState]);
     
     const winnerId = useMemo(() => {
