@@ -12,7 +12,7 @@ export const useCheckers = () => {
     const { saveGame } = useLocalStorage();
 
     const initGame = useCallback(async () => {
-        let gameId: string | null = getGameIdFromLocalStorage();
+        const gameId: string | null = getGameIdFromLocalStorage();
 
         let newState: Partial<GameState> | null = null;
         if (gameId) {
