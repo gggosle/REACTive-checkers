@@ -128,9 +128,12 @@ export function calculateValidMoves (state: GameState): Move[] {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = calculateJumpsAvailable(state);
     const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
+    if (!currentPlayer) {
+        throw new Error(`State Corruption: Player ID ${state.currentPlayerId} is missing!`);
+    }
     return getValidMoves(
         state.board,
-        currentPlayer?.moveDir,
+        currentPlayer.moveDir,
         state.mustJumpPiece,
         jumpsAvailable,
         state.selectedPiece.row,
@@ -140,5 +143,8 @@ export function calculateValidMoves (state: GameState): Move[] {
 
 export function calculateJumpsAvailable (state: GameState): boolean  {
     const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
-    return anyPlayerJumpsAvailable(state.board, currentPlayer?.moveDir);
+    if (!currentPlayer) {
+        throw new Error(`State Corruption: Player ID ${state.currentPlayerId} is missing!`);
+    }
+    return anyPlayerJumpsAvailable(state.board, currentPlayer.moveDir);
 }
