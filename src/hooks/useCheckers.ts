@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useLocalStorage} from './useLocalStorage.ts';
 import type {GameState} from "../types/game.ts";
 import {selectCapturedCount} from "../selectors/gameSelectors.ts";
-import {ApiService} from "../api"
+import {ApiError, ApiService} from "../api"
 import type {MovePayload} from "../api";
 import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
 import {calculateValidMoves} from "../logic/gameRules.ts";
@@ -13,6 +13,7 @@ export const useCheckers = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const { saveGame } = useLocalStorage();
+    const [fetchError, setFetchError] = useState(null);
 
 
     const initGame = useCallback(async () => {
@@ -21,9 +22,13 @@ export const useCheckers = () => {
         let newState: Partial<GameState> | null = null;
         if (gameId) {
             try {
+                setFetchError(null);
                 newState = await ApiService.apiGamesRetrieve(gameId);
             } catch (e) {
-                console.error("Failed to fetch game, creating new one", e);
+                if (e instanceof ApiError) {
+                    const errorMessage = e.body?.detail || e.statusText || "Move rejected by server.";
+                    setFetchError(errorMessage);
+                }
             }
         }
 
@@ -82,6 +87,7 @@ export const useCheckers = () => {
 
         setIsLoading(true);
         try {
+            setFetchError(null);
             const movePayload: MovePayload = {
                 fromPos: gameState.selectedPiece,
                 toPos: { row, col },
@@ -93,7 +99,10 @@ export const useCheckers = () => {
                 selectedPiece: null,
             }));
         } catch (error) {
-            console.error("Move error", error);
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
             setGameState(prev => prev ? { ...prev, selectedPiece: null } : null);
         } finally {
             setIsLoading(false);
@@ -105,6 +114,7 @@ export const useCheckers = () => {
 
         setIsLoading(true);
         try {
+            setFetchError(null);
             const newState = await ApiService.apiGamesUndoCreate(gameState.id);
             setGameState(prev => ({
                 ...prev!,
@@ -112,7 +122,10 @@ export const useCheckers = () => {
                 selectedPiece: null,
             }));
         } catch (error) {
-            console.error("Undo error", error);
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -125,6 +138,7 @@ export const useCheckers = () => {
     const handleRestart = useCallback(async () => {
         setIsLoading(true);
         try {
+            setFetchError(null);
             const newState = await ApiService.apiGamesCreate();
             setGameState({
                 ...newState,
@@ -133,7 +147,10 @@ export const useCheckers = () => {
                 isTimeOut: false,
             } as GameState);
         } catch (error) {
-            console.error("Restart error", error);
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -148,6 +165,7 @@ export const useCheckers = () => {
     }, [gameState]);
 
     return {
+        fetchError,
         ...gameState,
         board: gameState?.board || [],
         players: gameState?.players || [],

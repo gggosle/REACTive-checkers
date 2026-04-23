@@ -11,6 +11,7 @@ export const GameContainer: React.FC = () => {
     const [savedSession] = useState(() => loadGameSession());
 
     const {
+        fetchError,
         board,
         currentPlayerId,
         players,
@@ -31,6 +32,11 @@ export const GameContainer: React.FC = () => {
 
     return (
         <div className="game-container">
+            {fetchError && (
+                <div className="bg-red-500 text-white p-2 rounded flex justify-between">
+                    <span>{fetchError}</span>
+                </div>
+            )}
             <GameOverModal
                 winner={winnerId}
                 onRestart={handleRestart}
