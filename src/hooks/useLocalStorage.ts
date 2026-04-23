@@ -38,10 +38,7 @@ export const useLocalStorage = () => {
     const saveGame = useCallback((state: GameState) => {
         try {
             const stateToSave: SavedGameState = {
-                gameId: state.gameId,
-                history: state.history,
-                players: state.players,
-                mustJumpPiece: state.mustJumpPiece
+                gameId: state.id,
             };
             localStorage.setItem(GAME_KEY, JSON.stringify(stateToSave));
         } catch (e) {

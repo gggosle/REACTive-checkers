@@ -6,7 +6,7 @@ import { useGameClock } from '../hooks/useGameClock.ts';
 export interface TimerControllerProps {
     activePlayerId: number | undefined;
     players: Player[];
-    gameId: number,
+    gameId: string,
     onTimeOut: () => void;
     initTimer: TimerState | undefined;
 }

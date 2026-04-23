@@ -51,25 +51,23 @@ export type HistoryState = MoveEntry[];
 
 export interface TimerState {
     playerTimes: PlayerTimes;
-    gameId: number;
+    gameId: string;
 }
 
 export interface GameState {
     board: Board;
     players: Player[];
-    currentPlayer: Player;
+    currentPlayerId: number;
     mustJumpPiece: Position | null;
     history: HistoryState;
-    gameId: number;
+    id: string;
     selectedPiece: SelectedChecker | null;
     isTimeOut: boolean;
+    winnerId: number | null;
 }
 
 export interface SavedGameState {
-    gameId: number;
-    history: HistoryState;
-    players: Player[];
-    mustJumpPiece: Position | null;
+    gameId: string;
 }
 
 

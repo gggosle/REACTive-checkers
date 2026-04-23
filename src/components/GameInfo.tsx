@@ -1,19 +1,20 @@
 import type {Player} from '../types/game.ts'
-import React, {memo} from "react";
+import React, {memo, useMemo} from "react";
 import {CapturedCount} from "./CapturedCount.tsx";
 import {TurnIndicator} from "./TurnIndicator.tsx";
 
 
 interface GameInfoProps {
-    currentPlayer: Player;
+    currentPlayerId: number;
     players: Player[];
     capturedCount: Record<number, number>;
 }
 
-export const GameInfo: React.FC<GameInfoProps> = memo(({ currentPlayer,
+export const GameInfo: React.FC<GameInfoProps> = memo(({ currentPlayerId,
                                                      players,
                                                       capturedCount,
                                                      }) => {
+    const currentPlayer = useMemo(() => players.find(player => player.id === currentPlayerId), [currentPlayerId, players]);
     return (
         <header className="header">
             <h1 className="title">CHECKERS</h1>

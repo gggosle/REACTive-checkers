@@ -1,10 +1,5 @@
 import { GAME_CONFIG } from '../constants.js';
-import type {GameState, Move, Position, Checker, Board, Player} from '../types/game';
-import {generateMoveEntry} from "./historyUtils.ts";
-
-export function isBlackSquare(row: number, col: number): boolean {
-    return (row + col) % 2 === 1;
-}
+import type {GameState, Move, Position, Checker, Board} from '../types/game';
 
 export function isInBounds(row: number, col: number): boolean {
     return row >= 0 && row < GAME_CONFIG.BOARD_SIZE && col >= 0 && col < GAME_CONFIG.BOARD_SIZE;
@@ -125,84 +120,16 @@ export function anyPlayerJumpsAvailable(board: Board, playerMoveDir: number): bo
     return false;
 }
 
-export function hasAnyValidMoves(
-    board: Board,
-    playerMoveDir: number,
-    mustJumpPiece: Position | null,
-    hasJumpsAvailable: boolean
-): boolean {
-    for (let r = 0; r < GAME_CONFIG.BOARD_SIZE; r++) {
-        for (let c = 0; c < GAME_CONFIG.BOARD_SIZE; c++) {
-            const piece = getPiece(board, r, c);
-            if (piece && piece.direction === playerMoveDir) {
-                if (getValidMoves(board, playerMoveDir, mustJumpPiece, hasJumpsAvailable, r, c).length > 0) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-export function checkPromotion(piece: Checker, targetRow: number): boolean {
-    if (piece.isKing) return false;
-    return (piece.direction === 1 && targetRow === GAME_CONFIG.BOARD_SIZE - 1) ||
-        (piece.direction === -1 && targetRow === 0);
-}
-
-export function applyMove(state: GameState, from: Position, toMove: Move): GameState {
-    const piece = getPiece(state.board, from.row, from.col);
-    if (!piece) return state;
-
-    const newBoard = state.board.map(row => [...row]);
-    const newHistory = [...state.history];
-    const isJump = toMove.type === 'jump';
-    const isPromoted = checkPromotion(piece, toMove.row);
-
-    const movedPiece = { ...piece, row: toMove.row, col: toMove.col };
-    newBoard[from.row][from.col] = null;
-    newBoard[toMove.row][toMove.col] = movedPiece;
-
-    newHistory.push(generateMoveEntry(state.currentPlayer.id, from, toMove,
-        isJump, isPromoted));
-
-    if (isJump && toMove.captured) {
-        newBoard[toMove.captured.row][toMove.captured.col] = null;
-    }
-
-    if (isPromoted) {
-        movedPiece.isKing = true;
-    }
-
-    if (isJump && !isPromoted) {
-        if (hasJumpAvailable(newBoard, toMove.row, toMove.col)) {
-            return {
-                ...state,
-                board: newBoard,
-                history: newHistory,
-                mustJumpPiece: { row: toMove.row, col: toMove.col }
-            };
-        }
-    }
-
-    const nextPlayer = state.players.find(p => p.id !== state.currentPlayer.id) || state.players[0];
-
-    return {
-        ...state,
-        board: newBoard,
-        history: newHistory,
-        mustJumpPiece: null,
-        currentPlayer: nextPlayer
-    };
-}
-
 export function calculateValidMoves (state: GameState): Move[] {
     if (!state.selectedPiece) return [];
     const jumpsAvailable = calculateJumpsAvailable(state);
-
+    const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
+    if (!currentPlayer) {
+        throw new Error(`State Corruption: Player ID ${state.currentPlayerId} is missing!`);
+    }
     return getValidMoves(
         state.board,
-        state.currentPlayer.moveDir,
+        currentPlayer.moveDir,
         state.mustJumpPiece,
         jumpsAvailable,
         state.selectedPiece.row,
@@ -210,26 +137,10 @@ export function calculateValidMoves (state: GameState): Move[] {
     );
 }
 
-export function calculateWinner (state: GameState): Player | null  {
-    if (state.isTimeOut) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
-    }
-    const jumpsAvailable = calculateJumpsAvailable(state);
-
-    const canCurrentPlayerMove = hasAnyValidMoves(
-        state.board,
-        state.currentPlayer.moveDir,
-        state.mustJumpPiece,
-        jumpsAvailable
-    );
-
-    if (!canCurrentPlayerMove) {
-        return state.players.find(p => p.id !== state.currentPlayer.id) || null;
-    }
-
-    return null;
-}
-
 export function calculateJumpsAvailable (state: GameState): boolean  {
-    return anyPlayerJumpsAvailable(state.board, state.currentPlayer.moveDir);
+    const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
+    if (!currentPlayer) {
+        throw new Error(`State Corruption: Player ID ${state.currentPlayerId} is missing!`);
+    }
+    return anyPlayerJumpsAvailable(state.board, currentPlayer.moveDir);
 }

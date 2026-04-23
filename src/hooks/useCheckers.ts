@@ -1,45 +1,71 @@
-import {useCallback, useEffect, useMemo, useReducer} from 'react';
-import {gameReducer} from './reducers/gameReducer';
-import {createInitialGameState} from '../logic/gameInitState.ts';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useLocalStorage} from './useLocalStorage.ts';
-import type {GameState, SavedGameState} from "../types/game.ts";
-import {selectCapturedCount, selectValidMoves, selectWinner} from "../selectors/gameSelectors.ts";
-import {reconstructBoard} from "../logic/boardUtils.ts";
+import type {GameState} from "../types/game.ts";
+import {selectCapturedCount} from "../selectors/gameSelectors.ts";
+import {ApiError, ApiService} from "../api"
+import type {MovePayload} from "../api";
+import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
+import {calculateValidMoves} from "../logic/gameRules.ts";
 
-export const useCheckers = (savedState: SavedGameState | undefined) => {
+let initPromise: Promise<void> | null = null;
+
+export const useCheckers = () => {
+    const [gameState, setGameState] = useState<GameState | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { saveGame } = useLocalStorage();
+    const [fetchError, setFetchError] = useState(null);
 
-    const initGame = (): GameState => {
-        if (savedState && savedState.history && savedState.players && savedState.players.length > 0) {
-            const restoredBoard = reconstructBoard(savedState.history);
-            let activePlayer = savedState.players[0];
 
-            if (savedState.history.length > 0) {
-                const lastMove = savedState.history[savedState.history.length - 1];
+    const initGame = useCallback(async () => {
+        const gameId: string | null = getGameIdFromLocalStorage();
 
-                if (savedState.mustJumpPiece) {
-                    activePlayer = savedState.players.find(p => p.id === lastMove.playerId) || savedState.players[0];
-                } else {
-                    activePlayer = savedState.players.find(p => p.id !== lastMove.playerId) || savedState.players[0];
+        let newState: Partial<GameState> | null = null;
+        if (gameId) {
+            try {
+                setFetchError(null);
+                newState = await ApiService.apiGamesRetrieve(gameId);
+            } catch (e) {
+                if (e instanceof ApiError) {
+                    const errorMessage = e.body?.detail || e.statusText || "Move rejected by server.";
+                    setFetchError(errorMessage);
                 }
             }
-
-            return {
-                board: restoredBoard,
-                players: savedState.players,
-                currentPlayer: activePlayer,
-                history: savedState.history,
-                mustJumpPiece: savedState.mustJumpPiece || null,
-                gameId: savedState.gameId || Date.now(),
-                selectedPiece: null,
-                isTimeOut: false,
-            } as GameState;
         }
 
-        return createInitialGameState();
-    };
+        if (!newState) {
+            newState = await ApiService.apiGamesCreate();
+        }
 
-    const [gameState, dispatchGame] = useReducer(gameReducer, null, initGame);
+        const fullState: GameState = {
+            ...newState,
+            history: [],
+            selectedPiece: null,
+            isTimeOut: false,
+        } as GameState;
+
+        setGameState(fullState);
+    }, []);
+
+    useEffect(() => {
+        const runInit = async () => {
+            if (initPromise) {
+                await initPromise;
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                initPromise = initGame();
+                await initPromise;
+            } finally {
+                setIsLoading(false);
+                initPromise = null;
+            }
+        };
+
+        void runInit();
+    }, [initGame]);
+
     useEffect(() => {
         if (gameState) {
             saveGame(gameState);
@@ -47,40 +73,114 @@ export const useCheckers = (savedState: SavedGameState | undefined) => {
     }, [gameState, saveGame]);
 
     const handlePieceClick = useCallback((row: number, col: number) => {
-        dispatchGame({ type: 'CLICK_PIECE', payload: { row, col } });
-    }, []);
+        if (!gameState || gameState.winnerId || isLoading) return;
+        const piece = gameState.board[row][col];
+        const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
 
-    const handleCellClick = useCallback((row: number, col: number) => {
-        dispatchGame({ type: 'CLICK_CELL', payload: { row, col } });
-    }, []);
+        if (piece && piece.color === currentPlayer?.color) {
+            setGameState(prev => prev ? { ...prev, selectedPiece: { row, col } } : null);
+        }
+    }, [gameState, isLoading]);
 
-    const handleUndo = useCallback(() => {
-        dispatchGame({ type: 'UNDO' });
-    }, []);
+    const handleCellClick = useCallback(async (row: number, col: number) => {
+        if (!gameState || !gameState.selectedPiece || gameState.winnerId || isLoading) return;
 
-    const canUndo = gameState.history.length !== 0 && selectWinner(gameState) === null;
+        setIsLoading(true);
+        try {
+            setFetchError(null);
+            const movePayload: MovePayload = {
+                fromPos: gameState.selectedPiece,
+                toPos: { row, col },
+            }
+            const newState = await ApiService.apiGamesMoveCreate(gameState.id, movePayload);
+            setGameState(prev => ({
+                ...prev!,
+                ...newState,
+                selectedPiece: null,
+            }));
+        } catch (error) {
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
+            setGameState(prev => prev ? { ...prev, selectedPiece: null } : null);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [gameState, isLoading]);
+
+    const handleUndo = useCallback(async () => {
+        if (!gameState || gameState.winnerId || isLoading) return;
+
+        setIsLoading(true);
+        try {
+            setFetchError(null);
+            const newState = await ApiService.apiGamesUndoCreate(gameState.id);
+            setGameState(prev => ({
+                ...prev!,
+                ...newState,
+                selectedPiece: null,
+            }));
+        } catch (error) {
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }, [gameState, isLoading]);
 
     const handleTimeout = useCallback(() => {
-        dispatchGame({ type: 'TIMEOUT' });
+        setGameState(prev => prev ? { ...prev, isTimeOut: true } : null);
     }, []);
 
-    const handleRestart = useCallback(() => {
-        dispatchGame({ type: 'RESTART', payload: createInitialGameState() });
+    const handleRestart = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            setFetchError(null);
+            const newState = await ApiService.apiGamesCreate();
+            setGameState({
+                ...newState,
+                history: [],
+                selectedPiece: null,
+                isTimeOut: false,
+            } as GameState);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                const errorMessage = error.body?.detail || error.statusText || "Move rejected by server.";
+                setFetchError(errorMessage);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
-    const validMoves = useMemo(() => selectValidMoves(gameState), [gameState]);
-    const winner = useMemo(() => selectWinner(gameState), [gameState]);
-    const capturedCount = useMemo(() => selectCapturedCount(gameState), [gameState]);
+    const validMoves = useMemo(() => (gameState ? calculateValidMoves(gameState) : []), [gameState]);
+    const capturedCount = useMemo(() => (gameState ? selectCapturedCount(gameState) : {}), [gameState]);
+    
+    const winnerId = useMemo(() => {
+        if (!gameState || !gameState.winnerId) return null;
+        return gameState.players.find(p => p.id === gameState.winnerId) || null;
+    }, [gameState]);
 
     return {
+        fetchError,
         ...gameState,
+        board: gameState?.board || [],
+        players: gameState?.players || [],
+        currentPlayerId: gameState?.currentPlayerId || 0,
+        history: gameState?.history || [],
+        gameId: gameState?.id || '',
+        selectedPiece: gameState?.selectedPiece || null,
         validMoves,
-        winner,
+        winnerId,
         capturedCount,
+        isLoading,
         handlePieceClick,
         handleCellClick,
         handleUndo,
-        canUndo,
+        canUndo: !winnerId && !isLoading,
         handleTimeout,
         handleRestart
     };

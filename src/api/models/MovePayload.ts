@@ -1,0 +1,10 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+import type { Position } from './Position';
+export type MovePayload = {
+    fromPos: Position;
+    toPos: Position;
+};
+
