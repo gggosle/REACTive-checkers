@@ -3,15 +3,18 @@ import { useCheckers } from '../hooks/useCheckers.ts';
 import { Board } from './Board.tsx';
 import {GameInfo} from "./GameInfo.tsx";
 import {GameOverModal} from "./GameOverModal.tsx";
+import {ErrorModal} from "./ErrorModal.tsx";
 import {loadGameSession} from "../hooks/useLocalStorage.ts";
 import {UndoButton} from "./UndoButton.tsx";
 import {TimerController} from "./TimerController.tsx";
+import {CssSpinner} from "./CssSpinner.tsx";
 
 export const GameContainer: React.FC = () => {
     const [savedSession] = useState(() => loadGameSession());
 
     const {
         fetchError,
+        errorModalData,
         board,
         currentPlayerId,
         players,
@@ -22,12 +25,15 @@ export const GameContainer: React.FC = () => {
         isTimeOut,
         gameId,
         isLoading,
+        isAiThinking,
         handlePieceClick,
         handleCellClick,
         handleUndo,
         canUndo,
         handleTimeout,
         handleRestart,
+        handleReloadGame,
+        dismissError,
     } = useCheckers();
 
     return (
@@ -35,12 +41,21 @@ export const GameContainer: React.FC = () => {
             {fetchError && (
                 <div className="bg-red-500 text-white p-2 rounded flex justify-between">
                     <span>{fetchError}</span>
+                    <button onClick={dismissError}>&times;</button>
                 </div>
             )}
             <GameOverModal
                 winner={winnerId}
                 onRestart={handleRestart}
             />
+            {errorModalData && (
+                <ErrorModal
+                    title={errorModalData.title}
+                    message={errorModalData.message}
+                    onReload={handleReloadGame}
+                    onDismiss={handleRestart}
+                />
+            )}
 
             <GameInfo
                 currentPlayerId={currentPlayerId}
@@ -58,7 +73,13 @@ export const GameContainer: React.FC = () => {
             />
 
             <div className="main-content">
-                <main style={{ pointerEvents: isLoading ? 'none' : 'auto' }}>
+                <main style={{ pointerEvents: (isLoading || isAiThinking) ? 'none' : 'auto' }}>
+                    {isAiThinking && (
+                        <div className="ai-thinking-overlay">
+                            <CssSpinner />
+                            <span>AI thinking...</span>
+                        </div>
+                    )}
                     <Board
                         boardState={board}
                         selectedPiece={selectedPiece}
@@ -69,7 +90,7 @@ export const GameContainer: React.FC = () => {
                 </main>
             </div>
             <div className="footer">
-                <button className="btn btn-primary" onClick={handleRestart} disabled={isLoading}>
+                <button className="btn btn-primary" onClick={handleRestart} disabled={isLoading || isAiThinking}>
                     Restart Game
                 </button>
 

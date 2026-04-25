@@ -1,4 +1,5 @@
 import type {Color} from "../constants.ts";
+import type {AllowedMovesEntry} from "../api";
 
 export type CheckerColor = typeof Color[keyof typeof Color];
 
@@ -59,6 +60,8 @@ export interface GameState {
     players: Player[];
     currentPlayerId: number;
     mustJumpPiece: Position | null;
+    allowedMoves: AllowedMovesEntry[] | null;
+    aiPlayerId: number | null;
     history: HistoryState;
     id: string;
     selectedPiece: SelectedChecker | null;
