@@ -4,15 +4,16 @@
 /* eslint-disable */
 import type { GameState } from '../models/GameState';
 import type { MovePayload } from '../models/MovePayload';
+import type { TaskResponse } from '../models/TaskResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ApiService {
+export class GamesService {
     /**
      * @returns GameState
      * @throws ApiError
      */
-    public static apiGamesCreate(): CancelablePromise<GameState> {
+    public static gamesCreate(): CancelablePromise<GameState> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/games/',
@@ -23,7 +24,7 @@ export class ApiService {
      * @returns GameState
      * @throws ApiError
      */
-    public static apiGamesRetrieve(
+    public static gamesRetrieve(
         id: string,
     ): CancelablePromise<GameState> {
         return __request(OpenAPI, {
@@ -38,12 +39,13 @@ export class ApiService {
      * @param id A UUID string identifying this game.
      * @param requestBody
      * @returns GameState
+     * @returns TaskResponse (202 Accepted when AI move)
      * @throws ApiError
      */
-    public static apiGamesMoveCreate(
+    public static gamesMoveCreate(
         id: string,
         requestBody: MovePayload,
-    ): CancelablePromise<GameState> {
+    ): CancelablePromise<GameState | TaskResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/games/{id}/move/',
@@ -59,7 +61,7 @@ export class ApiService {
      * @returns GameState
      * @throws ApiError
      */
-    public static apiGamesUndoCreate(
+    public static gamesUndoCreate(
         id: string,
     ): CancelablePromise<GameState> {
         return __request(OpenAPI, {
