@@ -2,27 +2,36 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AllowedMovesEntry } from './AllowedMoves';
 export type GameState = {
     readonly id: string;
     /**
      * Stores the 8x8 matrix of the board
      */
-    board: any;
+    readonly board: any;
     /**
      * The current Player object's id
      */
-    currentPlayerId: number;
+    readonly currentPlayerId: number;
     /**
      * Array of 2 Player instances
      */
-    players: any;
+    readonly players: any;
     /**
      * {row: int, col: int} if multi-jump locked
      */
-    mustJumpPiece?: any;
+    readonly mustJumpPiece: any;
+    /**
+     * Cached allowed moves for current player (from backend)
+     */
+    readonly allowedMoves: AllowedMovesEntry[] | null;
+    /**
+     * Player id controlled by AI in single-player
+     */
+    readonly aiPlayerId: number | null;
     /**
      * ID of the winning player
      */
-    winnerId?: number | null;
+    readonly winnerId: number | null;
 };
 
