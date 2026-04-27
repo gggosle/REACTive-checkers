@@ -2,19 +2,18 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { TaskStatus } from '../models/TaskStatus';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class TaskStatusService {
     /**
      * @param taskId
-     * @returns TaskStatus
+     * @returns any
      * @throws ApiError
      */
     public static taskStatusRetrieve(
         taskId: string,
-    ): CancelablePromise<TaskStatus> {
+    ): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/task-status/{task_id}/',

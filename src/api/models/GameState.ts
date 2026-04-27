@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AllowedMovesEntry } from './AllowedMoves';
 export type GameState = {
     readonly id: string;
     /**
@@ -22,9 +21,9 @@ export type GameState = {
      */
     readonly mustJumpPiece: any;
     /**
-     * Cached allowed moves for current player (from backend)
+     * Cached valid moves for current player
      */
-    readonly allowedMoves: AllowedMovesEntry[] | null;
+    readonly allowedMoves: any;
     /**
      * Player id controlled by AI in single-player
      */

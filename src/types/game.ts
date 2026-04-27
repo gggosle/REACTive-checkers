@@ -1,11 +1,22 @@
 import type {Color} from "../constants.ts";
-import type {AllowedMovesEntry} from "../api";
 
 export type CheckerColor = typeof Color[keyof typeof Color];
 
 export interface Position {
     row: number;
     col: number;
+}
+
+export interface AllowedMove {
+    row: number;
+    col: number;
+    type: string;
+    captured: Position | null;
+}
+
+export interface AllowedMovesEntry {
+    fromPos: Position;
+    moves: AllowedMove[];
 }
 
 export type Player = {

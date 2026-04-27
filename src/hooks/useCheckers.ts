@@ -1,9 +1,9 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useLocalStorage} from './useLocalStorage.ts';
-import type {GameState, Board, Player} from "../types/game.ts";
+import type {GameState, Board, Player, AllowedMovesEntry} from "../types/game.ts";
 import {selectCapturedCount} from "../selectors/gameSelectors.ts";
 import {ApiError, GamesService, TaskStatusService} from "../api"
-import type {MovePayload, AllowedMovesEntry, TaskResponse} from "../api";
+import type {MovePayload, TaskResponse} from "../api";
 import {getGameIdFromLocalStorage} from "../logic/localStorageUtils.ts";
 
 let initPromise: Promise<void> | null = null;

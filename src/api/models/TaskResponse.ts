@@ -3,5 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type TaskResponse = {
-    task_id: string;
+    /**
+     * The ID of the background task
+     */
+    taskId: string;
 };
+

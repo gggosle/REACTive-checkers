@@ -39,7 +39,7 @@ export class GamesService {
      * @param id A UUID string identifying this game.
      * @param requestBody
      * @returns GameState
-     * @returns TaskResponse (202 Accepted when AI move)
+     * @returns TaskResponse
      * @throws ApiError
      */
     public static gamesMoveCreate(
